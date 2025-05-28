@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Búsqueda Avanzada por Característica</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Búsqueda Avanzada por Característica</h1>
+        <form action="{{ url_for('busqueda_avanzada1') }}" method="get">
+            <label>Característica:</label>
+            <input type="text" name="caracteristica" value="{{ caracteristica }}">
+            <label>Valor:</label>
+            <input type="text" name="valor" value="{{ valor }}">
+            <button type="submit">Buscar</button>
+        </form>
+        <ul>
+            {% for p in productos %}
+                <li>{{ p['nombre'] }} ({{ caracteristica }}: {{ p['caracteristicas'][caracteristica] }})</li>
+            {% else %}
+                <li>No se encontraron productos.</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}">Volver al inventario</a>
+    </div>
+</body>
+</html>

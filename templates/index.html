@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenido al Control de Inventario</h1>
+        <a href="{{ url_for('nuevo_producto') }}" class="button">Agregar nuevo producto</a>
+        <form action="{{ url_for('buscar_producto') }}" method="get">
+            <input type="text" name="q" placeholder="Buscar por nombre" />
+            <button type="submit">Buscar</button>
+        </form>
+        <h3>Búsqueda avanzada</h3>
+        <form action="{{ url_for('busqueda_avanzada1') }}" method="get" style="margin-bottom:10px;">
+            <label>Característica:</label>
+            <input type="text" name="caracteristica" placeholder="Ej: color">
+            <label>Valor:</label>
+            <input type="text" name="valor" placeholder="Ej: rojo">
+            <button type="submit">Buscar por característica</button>
+        </form>
+        <form action="{{ url_for('busqueda_avanzada2') }}" method="get">
+            <label>Stock entre:</label>
+            <input type="number" name="min" value="0" min="0">
+            <label>y</label>
+            <input type="number" name="max" value="999999" min="0">
+            <button type="submit">Buscar por stock</button>
+        </form>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Características</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+            {% for p in products %}
+            <tr>
+                <td>{{ p['nombre'] }}</td>
+                <td>
+                    {% for k, v in p['caracteristicas'].items() %}
+                        {{ k }}: {{ v }}<br>
+                    {% endfor %}
+                </td>
+                <td>{{ p['stock'] }}</td>
+                <td class="acciones">
+                    <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;">Editar</a>
+                    <form action="{{ url_for('eliminar_producto', id=p['_id']) }}" method="post" style="display:inline;">
+                        <button type="submit" onclick="return confirm('¿Eliminar producto?')" style="background:#e74c3c;">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

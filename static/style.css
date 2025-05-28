@@ -1,0 +1,85 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fa;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 32px 40px 40px 40px;
+}
+h1 {
+    color: #2c3e50;
+    margin-bottom: 24px;
+}
+a.button {
+    display: inline-block;
+    background: #2d8cf0;
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-bottom: 18px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+a.button:hover {
+    background: #1867c0;
+}
+form {
+    margin-bottom: 18px;
+}
+input[type="text"], input[type="number"] {
+    padding: 7px 10px;
+    border: 1px solid #cfd8dc;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 1em;
+}
+button {
+    background: #2d8cf0;
+    color: #fff;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #1867c0;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 18px;
+    background: #fafbfc;
+}
+th, td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+}
+th {
+    background: #f0f4f8;
+    color: #2c3e50;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+.acciones a, .acciones form {
+    display: inline-block;
+    margin-right: 6px;
+}
+.acciones form {
+    margin: 0;
+}
+@media (max-width: 700px) {
+    .container { padding: 10px; }
+    table, thead, tbody, th, td, tr { display: block; }
+    th, td { padding: 8px 4px; }
+}

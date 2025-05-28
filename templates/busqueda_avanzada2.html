@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Búsqueda Avanzada por Stock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Búsqueda Avanzada por Stock</h1>
+        <form action="{{ url_for('busqueda_avanzada2') }}" method="get">
+            <label>Stock entre:</label>
+            <input type="number" name="min" value="{{ min_stock }}">
+            <label>y</label>
+            <input type="number" name="max" value="{{ max_stock }}">
+            <button type="submit">Buscar</button>
+        </form>
+        <ul>
+            {% for p in productos %}
+                <li>{{ p['nombre'] }} (Stock: {{ p['stock'] }})</li>
+            {% else %}
+                <li>No se encontraron productos.</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}">Volver al inventario</a>
+    </div>
+</body>
+</html>

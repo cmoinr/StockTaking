@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Resultados de la búsqueda</h1>
+        <form action="{{ url_for('buscar_producto') }}" method="get">
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre">
+            <button type="submit">Buscar</button>
+        </form>
+        <ul>
+            {% for p in productos %}
+                <li>{{ p['nombre'] }} (Stock: {{ p['stock'] }})</li>
+            {% else %}
+                <li>No se encontraron productos.</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}" class="button">Volver al inventario</a>
+    </div>
+</body>
+</html>
