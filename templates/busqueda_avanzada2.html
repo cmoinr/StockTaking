@@ -3,26 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>Búsqueda Avanzada por Stock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='navbar-icons.js') }}" defer></script>
 </head>
 <body>
-    <div class="container">
+    <nav class="navbar">
+        <div class="navbar-title">
+            <span class="main-title">Soccer</span>
+            <span class="subtitle">stocktaking</span>
+        </div>
+        <div class="navbar-actions">
+            <a href="{{ url_for('index') }}" class="icon-btn" title="Home">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 4l9 8"/><path d="M9 21V13h6v8"/></svg>
+                <span class="icon-label">Home</span>
+            </a>
+            <a href="{{ url_for('busqueda_avanzada1') }}" class="icon-btn" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Búsqueda por Característica
+            </a>
+            <a href="{{ url_for('busqueda_avanzada2') }}" class="icon-btn" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Búsqueda por Stock
+            </a>                         
+        </div>
+    </nav>    
+    <div class="container uniform-font">
         <h1>Búsqueda Avanzada por Stock</h1>
         <form action="{{ url_for('busqueda_avanzada2') }}" method="get">
             <label>Stock entre:</label>
-            <input type="number" name="min" value="{{ min_stock }}">
+            <input type="number" name="min" placeholder="{{ min_stock }}">
             <label>y</label>
-            <input type="number" name="max" value="{{ max_stock }}">
+            <input type="number" name="max" placeholder="{{ max_stock }}">
             <button type="submit">Buscar</button>
         </form>
-        <ul>
-            {% for p in productos %}
-                <li>{{ p['nombre'] }} (Stock: {{ p['stock'] }})</li>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Características</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+            {% if products|length == 0 %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#888; font-style:italic;">No se encontraron productos con dicho nombre.</td>
+                </tr>
             {% else %}
-                <li>No se encontraron productos.</li>
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('index') }}">Volver al inventario</a>
+                {% for p in products %}
+                    <tr>
+                        <td>{{ p['nombre'] }}</td>
+                        <td>{{ p['categoria'] }}</td>
+                        <td>
+                            {% for k, v in p['caracteristicas'].items() %}
+                                <strong>{{ k }}:</strong> {{ v }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>{{ p['stock'] }}</td>
+                        <td class="acciones">
+                            <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;">Editar</a>
+                            <form action="{{ url_for('eliminar_producto', id=p['_id']) }}" method="post" style="display:inline;">
+                                <button type="submit" onclick="return confirm('¿Eliminar producto?')" style="background:#0e5e5a;">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
     </div>
 </body>
 </html>

@@ -20,41 +20,56 @@
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 4l9 8"/><path d="M9 21V13h6v8"/></svg>
                 <span class="icon-label">Home</span>
             </a>
+            <a href="{{ url_for('busqueda_avanzada1') }}" class="icon-btn" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Búsqueda por Característica
+            </a>
+            <a href="{{ url_for('busqueda_avanzada2') }}" class="icon-btn" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Búsqueda por Stock
+            </a>                         
         </div>
     </nav>
     <div class="container uniform-font">
-        <h1>Resultados de la búsqueda</h1>
+        <h1>Búsqueda por nombre</h1>
         <form action="{{ url_for('buscar_producto') }}" method="get">
-            <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre" class="modern-search">
+            <input type="text" name="q" value="{{ query }}" placeholder="Nombre del Producto" class="modern-search" required>
             <button type="submit">Buscar</button>
         </form>
         
-        <h3>Búsqueda avanzada</h3>
-        <form action="{{ url_for('busqueda_avanzada1') }}" method="get" style="margin-bottom:10px;">
-            <label>Característica:</label>
-            <input type="text" name="caracteristica" placeholder="Ej: color" list="caracteristicas-list" id="caracteristica-input">
-            <datalist id="caracteristicas-list"></datalist>
-            <label>Valor:</label>
-            <input type="text" name="valor" placeholder="Ej: rojo" list="valores-list" id="valor-input">
-            <datalist id="valores-list"></datalist>
-            <button type="submit">Buscar por característica</button>
-        </form>
-        <form action="{{ url_for('busqueda_avanzada2') }}" method="get">
-            <label>Stock entre:</label>
-            <input type="number" name="min" value="0" min="0">
-            <label>y</label>
-            <input type="number" name="max" value="999999" min="0">
-            <button type="submit">Buscar por stock</button>
-        </form>
-
-        <ul>
-            {% for p in productos %}
-                <li>{{ p['nombre'] }} (Stock: {{ p['stock'] }})</li>
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Características</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+            {% if products|length == 0 %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#888; font-style:italic;">No se encontraron productos con dicho nombre.</td>
+                </tr>
             {% else %}
-                <li>No se encontraron productos.</li>
-            {% endfor %}
-        </ul>
-        <a href="{{ url_for('index') }}" class="button">Volver al inventario</a>
+                {% for p in products %}
+                    <tr>
+                        <td>{{ p['nombre'] }}</td>
+                        <td>{{ p['categoria'] }}</td>
+                        <td>
+                            {% for k, v in p['caracteristicas'].items() %}
+                                <strong>{{ k }}:</strong> {{ v }}<br>
+                            {% endfor %}
+                        </td>
+                        <td>{{ p['stock'] }}</td>
+                        <td class="acciones">
+                            <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;">Editar</a>
+                            <form action="{{ url_for('eliminar_producto', id=p['_id']) }}" method="post" style="display:inline;">
+                                <button type="submit" onclick="return confirm('¿Eliminar producto?')" style="background:#0e5e5a;">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </table>
     </div>
 </body>
 </html>
