@@ -3,24 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Editar Producto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='navbar-icons.js') }}" defer></script>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-title">
+            <span class="main-title">Soccer</span>
+            <span class="subtitle">stocktaking</span>
+        </div>
+        <div class="navbar-actions">
+            <a href="{{ url_for('index') }}" class="icon-btn" title="Home">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12L12 4l9 8"/><path d="M9 21V13h6v8"/></svg>
+                <span class="icon-label">Home</span>
+            </a>
+        </div>
+    </nav>
     <div class="container">
-        <h1>Editar Producto</h1>
-        <form method="post">
-            <label>Nombre:</label>
-            <input type="text" name="nombre" value="{{ producto['nombre'] }}" required><br>
-            <label>Stock:</label>
-            <input type="number" name="stock" min="0" value="{{ producto['stock'] }}" required><br>
-            <h3>Características:</h3>
-            {% for k, v in producto['caracteristicas'].items() %}
-                <input type="text" name="car_{{ k }}" value="{{ v }}" placeholder="{{ k }}">
-            {% endfor %}
-            <br><br>
-            <button type="submit">Guardar cambios</button>
-            <a href="{{ url_for('index') }}" class="button">Cancelar</a>
+        <form method="post" class="form-producto" id="form-producto">
+            <h1>Editar Producto</h1>
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" name="nombre" value="{{ producto['nombre'] }}" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría:</label>
+                <select name="car_categoria" required>
+                    <option value="">Selecciona una categoría</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat['nombre'] }}" {% if producto['categoria'] == cat['nombre'] %}selected{% endif %}>{{ cat['nombre'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Stock (disponible):</label>
+                <input type="number" name="stock" min="0" value="{{ producto['stock'] }}" required>
+            </div>
+            <h3 style="text-align:center;">Características del producto:</h3>
+            <div id="caracteristicas-list">
+                {% for k, v in producto['caracteristicas'].items() %}
+                    <div class="form-group caracteristica-item">
+                        <div style="display:flex; gap:8px; width:100%;">
+                            <input type="text" name="car_nombre_{{ loop.index }}" value="{{ k }}" placeholder="Nombre">
+                            <input type="text" name="car_valor_{{ loop.index }}" value="{{ v }}" placeholder="Valor">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div style="text-align:center; margin-bottom:18px;">
+                <button type="button" class="icon-btn" onclick="agregarCaracteristica()">Añadir Característica</button>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button">Guardar cambios</button>
+            </div>
         </form>
     </div>
+    <script>
+    function agregarCaracteristica() {
+        const list = document.getElementById('caracteristicas-list');
+        const idx = list.querySelectorAll('.caracteristica-item').length + 1;
+        const div = document.createElement('div');
+        div.className = 'form-group caracteristica-item';
+        div.innerHTML = `<div style="display:flex; gap:8px; width:100%;">
+                            <input type="text" name="car_nombre_${idx}" placeholder="Nombre">
+                            <input type="text" name="car_valor_${idx}" placeholder="Valor">
+                        </div>`;
+        list.appendChild(div);
+    }
+    </script>
 </body>
 </html>

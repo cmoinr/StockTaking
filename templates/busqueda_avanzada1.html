@@ -8,12 +8,14 @@
 <body>
     <div class="container">
         <h1>Búsqueda Avanzada por Característica</h1>
-        <form action="{{ url_for('busqueda_avanzada1') }}" method="get">
+        <form action="{{ url_for('busqueda_avanzada1') }}" method="get" style="margin-bottom:10px;">
             <label>Característica:</label>
-            <input type="text" name="caracteristica" value="{{ caracteristica }}">
+            <input type="text" name="caracteristica" placeholder="Ej: color" list="caracteristicas-list" id="caracteristica-input">
+            <datalist id="caracteristicas-list"></datalist>
             <label>Valor:</label>
-            <input type="text" name="valor" value="{{ valor }}">
-            <button type="submit">Buscar</button>
+            <input type="text" name="valor" placeholder="Ej: rojo" list="valores-list" id="valor-input">
+            <datalist id="valores-list"></datalist>
+            <button type="submit">Buscar por característica</button>
         </form>
         <ul>
             {% for p in productos %}
@@ -24,5 +26,41 @@
         </ul>
         <a href="{{ url_for('index') }}">Volver al inventario</a>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Autocompletar características
+            fetch("{{ url_for('caracteristicas_unicas') }}")
+                .then(response => response.json())
+                .then(data => {
+                    const datalist = document.getElementById('caracteristicas-list');
+                    datalist.innerHTML = '';
+                    data.forEach(car => {
+                        const option = document.createElement('option');
+                        option.value = car;
+                        datalist.appendChild(option);
+                    });
+                });
+
+            // Autocompletar valores según característica seleccionada
+            const carInput = document.getElementById('caracteristica-input');
+            const valInput = document.getElementById('valor-input');
+            carInput.addEventListener('input', function() {
+                const car = carInput.value;
+                if (car.length > 0) {
+                    fetch(`/valores_caracteristica?caracteristica=${encodeURIComponent(car)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const vlist = document.getElementById('valores-list');
+                            vlist.innerHTML = '';
+                            data.forEach(val => {
+                                const option = document.createElement('option');
+                                option.value = val;
+                                vlist.appendChild(option);
+                            });
+                        });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

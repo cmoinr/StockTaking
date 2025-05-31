@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <title>Inventario</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='navbar-icons.js') }}" defer></script>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="navbar-title">
+            <span class="main-title">Soccer</span>
+            <span class="subtitle">stocktaking</span>
+        </div>
+        <div class="navbar-actions">
+            <a href="{{ url_for('nuevo_producto') }}" class="icon-btn" title="Agregar producto">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Agregar nuevo producto
+            </a>
+            <a href="{{ url_for('buscar_producto') }}" class="icon-btn" title="Buscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1ec6b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Buscar producto
+            </a>
+        </div>
+    </nav>
     <div class="container">
-        <h1>Bienvenido al Control de Inventario</h1>
-        <a href="{{ url_for('nuevo_producto') }}" class="button">Agregar nuevo producto</a>
-        <form action="{{ url_for('buscar_producto') }}" method="get">
-            <input type="text" name="q" placeholder="Buscar por nombre" />
-            <button type="submit">Buscar</button>
-        </form>
-        <h3>Búsqueda avanzada</h3>
-        <form action="{{ url_for('busqueda_avanzada1') }}" method="get" style="margin-bottom:10px;">
-            <label>Característica:</label>
-            <input type="text" name="caracteristica" placeholder="Ej: color">
-            <label>Valor:</label>
-            <input type="text" name="valor" placeholder="Ej: rojo">
-            <button type="submit">Buscar por característica</button>
-        </form>
-        <form action="{{ url_for('busqueda_avanzada2') }}" method="get">
-            <label>Stock entre:</label>
-            <input type="number" name="min" value="0" min="0">
-            <label>y</label>
-            <input type="number" name="max" value="999999" min="0">
-            <button type="submit">Buscar por stock</button>
-        </form>
+        <h1>Control de Inventario</h1>
         <table>
             <tr>
                 <th>Nombre</th>
+                <th>Categoría</th>
                 <th>Características</th>
                 <th>Stock</th>
                 <th>Acciones</th>
@@ -38,16 +39,17 @@
             {% for p in products %}
             <tr>
                 <td>{{ p['nombre'] }}</td>
+                <td>{{ p['categoria'] }}</td>
                 <td>
                     {% for k, v in p['caracteristicas'].items() %}
-                        {{ k }}: {{ v }}<br>
+                        <strong>{{ k }}:</strong> {{ v }}<br>
                     {% endfor %}
                 </td>
                 <td>{{ p['stock'] }}</td>
                 <td class="acciones">
                     <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;">Editar</a>
                     <form action="{{ url_for('eliminar_producto', id=p['_id']) }}" method="post" style="display:inline;">
-                        <button type="submit" onclick="return confirm('¿Eliminar producto?')" style="background:#e74c3c;">Eliminar</button>
+                        <button type="submit" onclick="return confirm('¿Eliminar producto?')" style="background:#0e5e5a;">Eliminar</button>
                     </form>
                 </td>
             </tr>
