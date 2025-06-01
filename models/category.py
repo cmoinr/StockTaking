@@ -2,8 +2,8 @@
 
 def get_category_schema():
     return {
-        "nombre": str,  # Nombre de la categoría
-        "descripcion": str  # Descripción opcional
+        "nombre": str,
+        "descripcion": str
     }
 
 def validate_category(data):

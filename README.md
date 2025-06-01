@@ -10,13 +10,15 @@ Este proyecto es una web-app en Python (Flask) para el control de inventario de 
 - `/templates` — Plantillas HTML para la web-app
 - `requirements.txt` — Dependencias del proyecto
 - `README.md` — Este archivo
+- `ER-diagram.png` — Diagrama de la base de datos (MongoDB)
 
-## Funcionalidades principales
+## Estado del proyecto
 
-- Alta, edición y eliminación de productos
-- Búsqueda por nombre y búsquedas avanzadas (por característica y por rango de stock)
-- Interfaz web elegante y responsiva
-- Integración con MongoDB local (creación automática de la base de datos y colecciones)
+- [x] Alta, edición y eliminación de productos
+- [x] Búsqueda por nombre y búsquedas avanzadas (por característica y por rango de stock)
+- [x] Interfaz web elegante y responsiva
+- [x] Integración con MongoDB local (creación automática de la base de datos y colecciones)
+- [x] Diagrama de base de datos incluido
 
 ## Instalación y uso
 
@@ -39,10 +41,15 @@ Este proyecto es una web-app en Python (Flask) para el control de inventario de 
    ```
 6. **Abre tu navegador en** [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
+## Pruebas
+- Puedes ejecutar `test_mongo_connection.py` para verificar la conexión a MongoDB antes de iniciar la app.
+
+## Diagrama de la base de datos
+- Consulta el archivo `ER-diagram.png` para ver la estructura de las colecciones y relaciones principales.
+
 ## Notas
 - La base de datos `stock_db` y las colecciones se crean automáticamente al agregar el primer producto.
 - Todos los estilos están centralizados en `static/style.css`.
-- Puedes personalizar los modelos en `/models` según tus necesidades.
 
 ---
 

@@ -7,22 +7,22 @@ MONGO_URI = 'mongodb://localhost:27017/stock_db'
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client.get_database()
 
-# # Categorías principales para tienda de fútbol
-# categorias = [
-#     {"nombre": "Calzado", "descripcion": "Botines, zapatillas de fútbol campo y futsal"},
-#     {"nombre": "Balones", "descripcion": "Balones de fútbol y futsal"},
-#     {"nombre": "Indumentaria", "descripcion": "Ropa deportiva: camisetas, shorts, medias"},
-#     {"nombre": "Protecciones", "descripcion": "Canilleras, tobilleras, protectores"},
-#     {"nombre": "Entrenamiento", "descripcion": "Conos, vallas, escaleras, mini arcos"},
-#     {"nombre": "Accesorios", "descripcion": "Guantes, infladores, silbatos, cintas, bolsos"}
-# ]
+# Categorías principales para tienda de fútbol
+categorias = [
+    {"nombre": "Calzado", "descripcion": "Botines, zapatillas de fútbol campo y futsal"},
+    {"nombre": "Balones", "descripcion": "Balones de fútbol y futsal"},
+    {"nombre": "Indumentaria", "descripcion": "Ropa deportiva: camisetas, shorts, medias"},
+    {"nombre": "Protecciones", "descripcion": "Canilleras, tobilleras, protectores"},
+    {"nombre": "Entrenamiento", "descripcion": "Conos, vallas, escaleras, mini arcos"},
+    {"nombre": "Accesorios", "descripcion": "Guantes, infladores, silbatos, cintas, bolsos"}
+]
 
-# # Insertar categorías si no existen
-# cat_col = get_category_collection(db)
-# for cat in categorias:
-#     if not cat_col.find_one({"nombre": cat["nombre"]}):
-#         if validate_category(cat):
-#             cat_col.insert_one(cat)
+# Insertar categorías si no existen
+cat_col = get_category_collection(db)
+for cat in categorias:
+    if not cat_col.find_one({"nombre": cat["nombre"]}):
+        if validate_category(cat):
+            cat_col.insert_one(cat)
 
 # Productos de ejemplo
 productos = [
@@ -226,4 +226,4 @@ for prod in productos:
         if validate_product(prod):
             prod_col.insert_one(prod)
 
-print("Categorías y productos iniciales insertados correctamente.")
+print("Categorías y productos insertados correctamente.")
