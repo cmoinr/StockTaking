@@ -10,7 +10,7 @@ app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/stock_db')
 
 mongo_client = MongoClient(app.config['MONGO_URI'])
-db = mongo_client.get_database()
+db = mongo_client.get_database('stock_db')
 
 @app.route('/')
 def index():
