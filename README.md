@@ -2,7 +2,9 @@
 
 Este proyecto es una web-app en Python (Flask) para el control de inventario de un comercio pequeño: una tienda de articulos de futbol, integrando MongoDB. Permite gestionar productos, sus características y el stock disponible, con una interfaz web moderna y búsquedas avanzadas.
 
-**Accede a la web-app en** [stocktaking-5vyg.onrender.com](stocktaking-5vyg.onrender.com)
+---
+
+> Accede a la web-app en [https://stocktaking-5vyg.onrender.com/](https://stocktaking-5vyg.onrender.com/)
 
 ## Estructura del proyecto
 
