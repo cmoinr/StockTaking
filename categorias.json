@@ -1,0 +1,8 @@
+[
+  {"nombre": "Calzado", "descripcion": "Botines, zapatillas de fútbol campo y futsal"},
+  {"nombre": "Balones", "descripcion": "Balones de fútbol y futsal"},
+  {"nombre": "Indumentaria", "descripcion": "Ropa deportiva: camisetas, shorts, medias"},
+  {"nombre": "Protecciones", "descripcion": "Canilleras, tobilleras, protectores"},
+  {"nombre": "Entrenamiento", "descripcion": "Conos, vallas, escaleras, mini arcos"},
+  {"nombre": "Accesorios", "descripcion": "Guantes, infladores, silbatos, cintas, bolsos"}
+]

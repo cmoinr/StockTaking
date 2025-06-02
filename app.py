@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-from pymongo import MongoClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product, get_category_collection
 from bson.objectid import ObjectId
 import os
@@ -9,7 +10,7 @@ app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
 # Usar variable de entorno para la URI de MongoDB
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/stock_db')
 
-mongo_client = MongoClient(app.config['MONGO_URI'])
+mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
 
 @app.route('/')
