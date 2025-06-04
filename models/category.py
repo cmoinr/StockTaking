@@ -1,4 +1,7 @@
-# Definición de esquemas y utilidades para la colección de categorías
+# Esquema y utilidades para la colección de categorías
+
+def get_category_collection(db):
+    return db['categories']
 
 def get_category_schema():
     return {
@@ -12,6 +15,3 @@ def validate_category(data):
         if key not in data or not isinstance(data[key], typ):
             return False
     return True
-
-def get_category_collection(db):
-    return db['categories']

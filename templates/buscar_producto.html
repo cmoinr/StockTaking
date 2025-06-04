@@ -43,11 +43,13 @@
                 <th>Categoría</th>
                 <th>Características</th>
                 <th>Stock</th>
+                <th>Precio</th>
+                <th>Imagen</th>
                 <th></th>
             </tr>
             {% if products|length == 0 %}
                 <tr>
-                    <td colspan="5" style="text-align:center; color:#888; font-style:italic;">No se encontraron productos con dicho nombre.</td>
+                    <td colspan="7" style="text-align:center; color:#888; font-style:italic;">No se encontraron productos con dicho nombre.</td>
                 </tr>
             {% else %}
                 {% for p in products %}
@@ -60,6 +62,22 @@
                             {% endfor %}
                         </td>
                         <td>{{ p['stock'] }}</td>
+                        <td>
+                            {% if 'precio' in p and p['precio'] %}
+                                <strong>$:</strong> {{ '%.2f' % p['precio']['$'] if '$' in p['precio'] and p['precio']['$'] is not none else '-' }}<br>
+                                <strong>Bs.:</strong> {{ '%.2f' % p['precio']['bs'] if 'bs' in p['precio'] and p['precio']['bs'] is not none else '-' }}
+                            {% else %}
+                                <strong>$:</strong> -<br>
+                                <strong>Bs.:</strong> -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if p['imagen'] %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ p['imagen']) }}" alt="Imagen producto" style="max-width:60px; max-height:60px; border-radius:6px; cursor:pointer; border:1px solid #ccc;" onclick="mostrarImagenGrandeTabla(this)">
+                            {% else %}
+                                <span style="color:#aaa;font-size:0.9em;">Sin imagen</span>
+                            {% endif %}
+                        </td>
                         <td class="acciones">
                             <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;" title="Editar">
                                 <!-- Icono lápiz (editar) -->

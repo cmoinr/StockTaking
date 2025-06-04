@@ -4,14 +4,25 @@ from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product, get_category_collection
 from bson.objectid import ObjectId
 import os
+from werkzeug.utils import secure_filename
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
 # Usar variable de entorno para la URI de MongoDB
 app.config['MONGO_URI'] = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/stock_db')
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB máximo
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+
+if not os.path.exists(app.config['UPLOAD_FOLDER']):
+    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def index():
@@ -27,7 +38,11 @@ def nuevo_producto():
             'nombre': request.form['nombre'],
             'caracteristicas': {},
             'stock': int(request.form['stock']),
-            'categoria': request.form.get('car_categoria')
+            'categoria': request.form.get('car_categoria'),
+            'precio': {
+                '$': float(request.form.get('precio_$', 0)),
+                'bs': float(request.form.get('precio_bs', 0))
+            }
         }
         # Procesar características dinámicas
         for key in request.form:
@@ -37,6 +52,21 @@ def nuevo_producto():
                 valor = request.form.get(f'car_valor_{idx}', '').strip()
                 if nombre and valor:
                     data['caracteristicas'][nombre] = valor
+        # Procesar imagen
+        imagen = request.files.get('imagen')
+        if imagen and allowed_file(imagen.filename):
+            filename = secure_filename(imagen.filename)
+            # Evitar sobrescribir archivos
+            base, ext = os.path.splitext(filename)
+            i = 1
+            final_filename = filename
+            while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], final_filename)):
+                final_filename = f"{base}_{i}{ext}"
+                i += 1
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], final_filename))
+            data['imagen'] = final_filename
+        else:
+            data['imagen'] = None
         if validate_product(data):
             get_product_collection(db).insert_one(data)
             flash('Producto agregado exitosamente.')
@@ -59,7 +89,11 @@ def editar_producto(id):
             'nombre': request.form['nombre'],
             'caracteristicas': {},
             'stock': int(request.form['stock']),
-            'categoria': request.form.get('car_categoria')
+            'categoria': request.form.get('car_categoria'),
+            'precio': {
+                '$': float(request.form.get('precio_$', 0)),
+                'bs': float(request.form.get('precio_bs', 0))
+            }
         }
         # Procesar características dinámicas correctamente (tantas como existan)
         car_nombres = [k for k in request.form if k.startswith('car_nombre_')]
@@ -69,7 +103,33 @@ def editar_producto(id):
             valor = request.form.get(f'car_valor_{idx}', '').strip()
             if nombre and valor:
                 update['caracteristicas'][nombre] = valor
-                print(f"Agregando característica: {nombre} = {valor}")
+        # Procesar imagen (opcional)
+        imagen = request.files.get('imagen')
+        eliminar_imagen = request.form.get('eliminar_imagen') == '1'
+        imagen_anterior = producto.get('imagen')
+        import os
+        if eliminar_imagen and imagen_anterior:
+            # Eliminar archivo físico si existe
+            ruta = os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior)
+            if os.path.exists(ruta):
+                os.remove(ruta)
+            update['imagen'] = None
+        elif imagen and allowed_file(imagen.filename):
+            filename = secure_filename(imagen.filename)
+            base, ext = os.path.splitext(filename)
+            i = 1
+            final_filename = filename
+            while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], final_filename)):
+                final_filename = f"{base}_{i}{ext}"
+                i += 1
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], final_filename))
+            update['imagen'] = final_filename
+            # Si sube nueva imagen y había una anterior, eliminar la anterior
+            if imagen_anterior and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior)):
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior))
+        else:
+            # Si no se sube nueva imagen ni se elimina, mantener la anterior
+            update['imagen'] = None if eliminar_imagen else producto.get('imagen')
         if validate_product(update):
             collection.update_one({'_id': ObjectId(id)}, {'$set': update})
             flash('Producto actualizado.')
@@ -141,6 +201,28 @@ def valores_caracteristica():
         if val:
             val_set.add(val)
     return jsonify(sorted(list(val_set)))
+
+
+@app.route('/tasa_cambio')
+def tasa_cambio():
+    # Nueva implementación usando la API https://ve.dolarapi.com/v1/dolares/oficial
+    try:
+        resp = requests.get("https://ve.dolarapi.com/v1/dolares/oficial", timeout=5)
+        if resp.status_code == 200:
+            data = resp.json()
+            tasa = data.get('promedio')
+            if tasa:
+                print(f"Tasa de cambio obtenida de dolarapi.com: {tasa}")
+                return jsonify({"tasa": tasa, "fuente": "dolarapi.com"})
+            else:
+                print("No se encontró el campo 'precio' en la respuesta de la API")
+                return jsonify({"error": "No se encontró el campo 'precio' en la respuesta de la API"}), 500
+        else:
+            print(f"Error en la respuesta de la API: status {resp.status_code}")
+            return jsonify({"error": f"Error en la respuesta de la API: status {resp.status_code}"}), 500
+    except Exception as e:
+        print(f"Error al obtener la tasa de dolarapi.com: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':

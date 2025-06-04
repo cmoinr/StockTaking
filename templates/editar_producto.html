@@ -23,8 +23,25 @@
         </div>
     </nav>
     <div class="container">
-        <form method="post" class="form-producto" id="form-producto">
+        <form method="post" class="form-producto" id="form-producto" enctype="multipart/form-data">
             <h1>Editar Producto</h1>
+            <div class="form-group">
+                <label>Imagen del producto:</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button type="button" class="button" id="custom-file-btn" onclick="document.getElementById('imagen-input').click()">Cambiar imagen</button>
+                    <button type="button" class="button button-danger" id="delete-img-btn" onclick="eliminarImagenActual()">Eliminar imagen</button>
+                    <span id="file-name" style="font-size:0.75em; color:#555;">Ningún archivo seleccionado</span>
+                </div>
+                <input type="file" name="imagen" id="imagen-input" accept="image/*" style="display:none;">
+                <input type="hidden" name="eliminar_imagen" id="eliminar-imagen" value="0">
+                <div id="imagen-preview-container" style="margin-top:10px;">
+                    {% if producto['imagen'] %}
+                        <img id="imagen-preview" src="{{ url_for('static', filename='uploads/' ~ producto['imagen']) }}" alt="Previsualización" style="max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
+                    {% else %}
+                        <img id="imagen-preview" src="#" alt="Previsualización" style="display:none; max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
+                    {% endif %}
+                </div>
+            </div>
             <div class="form-group">
                 <label>Nombre:</label>
                 <input type="text" name="nombre" value="{{ producto['nombre'] }}" required>
@@ -39,22 +56,36 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Stock (disponible):</label>
+                <label style="text-align:center;">Precio:</label>
+                <div class="form-group caracteristica-item">
+                    <div style="display:flex; gap:8px; width:100%;">
+                        <input type="number" step="0.01" min="0" name="precio_$" id="precio_dolar" placeholder="$" value="{{ producto['precio']['$'] }}" oninput="convertirPrecio('usd')">
+                        <input type="number" step="0.01" min="0" name="precio_bs" id="precio_bs" placeholder="Bs" value="{{ producto['precio']['bs'] }}" oninput="convertirPrecio('bs')">
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-bottom:8px;">
+                <small style="font-size:0.75em; color:#555;">Tasa BCV: <span id="tasa-actual">Cargando...</span> Bs/$ <span id="tasa-fecha"></span></small>
+            </div>
+            <div class="form-group">
+                <label>Cantidad disponible (stock):</label>
                 <input type="number" name="stock" min="0" value="{{ producto['stock'] }}" required>
             </div>
-            <h3 style="text-align:center;">Características del producto:</h3>
-            <div id="caracteristicas-list">
-                {% for k, v in producto['caracteristicas'].items() %}
-                    <div class="form-group caracteristica-item">
-                        <div style="display:flex; gap:8px; width:100%;">
-                            <input type="text" name="car_nombre_{{ loop.index }}" value="{{ k }}" placeholder="Nombre">
-                            <input type="text" name="car_valor_{{ loop.index }}" value="{{ v }}" placeholder="Valor">
+            <div class="form-group">
+                <label style="text-align:center;">Características del producto:</label>
+                <div id="caracteristicas-list">
+                    {% for k, v in producto['caracteristicas'].items() %}
+                        <div class="form-group caracteristica-item">
+                            <div style="display:flex; gap:8px; width:100%;">
+                                <input type="text" name="car_nombre_{{ loop.index }}" value="{{ k }}" placeholder="Nombre">
+                                <input type="text" name="car_valor_{{ loop.index }}" value="{{ v }}" placeholder="Valor">
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div style="text-align:center; margin-bottom:18px;">
-                <button type="button" class="icon-btn" onclick="agregarCaracteristica()">Añadir Característica</button>
+                    {% endfor %}
+                </div>
+                <div style="text-align:center; margin-bottom:18px;">
+                    <button type="button" class="icon-btn" onclick="agregarCaracteristica()">Añadir Característica</button>
+                </div>
             </div>
             <div class="form-actions">
                 <button type="submit" class="button">Guardar cambios</button>
@@ -72,6 +103,91 @@
                             <input type="text" name="car_valor_${idx}" placeholder="Valor">
                         </div>`;
         list.appendChild(div);
+    }
+
+    // Imagen preview y modal
+    const imagenInput = document.getElementById('imagen-input');
+    const imagenPreview = document.getElementById('imagen-preview');
+    const fileNameSpan = document.getElementById('file-name');
+    imagenInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            fileNameSpan.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                imagenPreview.src = ev.target.result;
+                imagenPreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        } else {
+            fileNameSpan.textContent = 'Ningún archivo seleccionado';
+            imagenPreview.src = '#';
+            imagenPreview.style.display = 'none';
+        }
+    });
+    function mostrarImagenGrande() {
+        if (!imagenPreview.src || imagenPreview.src === '#') return;
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = 0;
+        modal.style.left = 0;
+        modal.style.width = '100vw';
+        modal.style.height = '100vh';
+        modal.style.background = 'rgba(0,0,0,0.7)';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.zIndex = 9999;
+        const img = document.createElement('img');
+        img.src = imagenPreview.src;
+        img.style.maxWidth = '90vw';
+        img.style.maxHeight = '90vh';
+        img.style.borderRadius = '10px';
+        img.style.boxShadow = '0 0 20px #0008';
+        modal.appendChild(img);
+        modal.onclick = function() { document.body.removeChild(modal); };
+        document.body.appendChild(modal);
+    }
+
+    // Conversión automática de precios
+    let tasaCambio = 100; // Valor por defecto
+    fetch('/tasa_cambio')
+      .then(res => res.json())
+      .then(data => {
+        if (data.tasa) {
+          tasaCambio = data.tasa;
+          document.getElementById('tasa-actual').textContent = tasaCambio;
+          // Mostrar fecha si viene en la respuesta, si no, usar hoy
+          let fecha = data.fecha;
+          if (!fecha) {
+            const hoy = new Date();
+            fecha = hoy.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          }
+          document.getElementById('tasa-fecha').textContent = `(${fecha})`;
+        } else {
+          document.getElementById('tasa-actual').textContent = 'No disponible';
+          document.getElementById('tasa-fecha').textContent = '';
+        }
+      })
+      .catch(() => {
+        document.getElementById('tasa-actual').textContent = 'No disponible';
+        document.getElementById('tasa-fecha').textContent = '';
+      });
+    function convertirPrecio(origen) {
+        const inputUsd = document.getElementById('precio_dolar');
+        const inputBs = document.getElementById('precio_bs');
+        if (origen === 'usd' && inputUsd.value) {
+            inputBs.value = (parseFloat(inputUsd.value) * tasaCambio).toFixed(2);
+        } else if (origen === 'bs' && inputBs.value) {
+            inputUsd.value = (parseFloat(inputBs.value) / tasaCambio).toFixed(2);
+        }
+    }
+    function eliminarImagenActual() {
+        const imagenPreview = document.getElementById('imagen-preview');
+        imagenPreview.src = '#';
+        imagenPreview.style.display = 'none';
+        document.getElementById('file-name').textContent = 'Ningún archivo seleccionado';
+        document.getElementById('eliminar-imagen').value = '1';
     }
     </script>
 </body>
