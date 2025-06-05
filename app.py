@@ -4,8 +4,8 @@ from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product, get_category_collection
 from bson.objectid import ObjectId
 import os
-from werkzeug.utils import secure_filename
 import requests
+from gcs_utils import upload_file_to_gcs, delete_file_from_gcs
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
@@ -14,9 +14,6 @@ app.config['MONGO_URI'] = os.environ.get('MONGO_URI', 'mongodb://localhost:27017
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB máximo
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
-
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
@@ -55,16 +52,9 @@ def nuevo_producto():
         # Procesar imagen
         imagen = request.files.get('imagen')
         if imagen and allowed_file(imagen.filename):
-            filename = secure_filename(imagen.filename)
-            # Evitar sobrescribir archivos
-            base, ext = os.path.splitext(filename)
-            i = 1
-            final_filename = filename
-            while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], final_filename)):
-                final_filename = f"{base}_{i}{ext}"
-                i += 1
-            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], final_filename))
-            data['imagen'] = final_filename
+            # Subir a GCS y guardar la URL pública
+            public_url = upload_file_to_gcs(imagen)
+            data['imagen'] = public_url
         else:
             data['imagen'] = None
         if validate_product(data):
@@ -107,26 +97,25 @@ def editar_producto(id):
         imagen = request.files.get('imagen')
         eliminar_imagen = request.form.get('eliminar_imagen') == '1'
         imagen_anterior = producto.get('imagen')
-        import os
         if eliminar_imagen and imagen_anterior:
-            # Eliminar archivo físico si existe
-            ruta = os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior)
-            if os.path.exists(ruta):
-                os.remove(ruta)
+            # Eliminar archivo en GCS si existe
+            if imagen_anterior:
+                # Extraer filename del URL
+                from urllib.parse import urlparse
+                parsed = urlparse(imagen_anterior)
+                filename = os.path.basename(parsed.path)
+                delete_file_from_gcs(filename)
             update['imagen'] = None
         elif imagen and allowed_file(imagen.filename):
-            filename = secure_filename(imagen.filename)
-            base, ext = os.path.splitext(filename)
-            i = 1
-            final_filename = filename
-            while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], final_filename)):
-                final_filename = f"{base}_{i}{ext}"
-                i += 1
-            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], final_filename))
-            update['imagen'] = final_filename
+            # Subir nueva imagen a GCS
+            public_url = upload_file_to_gcs(imagen)
+            update['imagen'] = public_url
             # Si sube nueva imagen y había una anterior, eliminar la anterior
-            if imagen_anterior and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior)):
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], imagen_anterior))
+            if imagen_anterior:
+                from urllib.parse import urlparse
+                parsed = urlparse(imagen_anterior)
+                filename = os.path.basename(parsed.path)
+                delete_file_from_gcs(filename)
         else:
             # Si no se sube nueva imagen ni se elimina, mantener la anterior
             update['imagen'] = None if eliminar_imagen else producto.get('imagen')

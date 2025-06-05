@@ -1,0 +1,5 @@
+# Google Cloud credentials
+stock-taking03-c15e3467ab9a.json
+.env
+*.json
+!README.md

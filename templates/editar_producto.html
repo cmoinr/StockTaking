@@ -36,7 +36,7 @@
                 <input type="hidden" name="eliminar_imagen" id="eliminar-imagen" value="0">
                 <div id="imagen-preview-container" style="margin-top:10px;">
                     {% if producto['imagen'] %}
-                        <img id="imagen-preview" src="{{ url_for('static', filename='uploads/' ~ producto['imagen']) }}" alt="Previsualización" style="max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
+                        <img id="imagen-preview" src="{{ producto['imagen'] }}" alt="Previsualización" style="max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
                     {% else %}
                         <img id="imagen-preview" src="#" alt="Previsualización" style="display:none; max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
                     {% endif %}
