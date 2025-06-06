@@ -22,7 +22,6 @@ def upload_file_to_gcs(file_storage, folder='uploads'):
     filename = secure_filename(file_storage.filename)
     blob = bucket.blob(f'{folder}/{filename}')
     blob.upload_from_file(file_storage, content_type=file_storage.content_type)
-    blob.make_public()
     return blob.public_url
 
 def delete_file_from_gcs(filename, folder='uploads'):
