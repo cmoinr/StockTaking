@@ -11,6 +11,8 @@ from compress_utils import compress_image
 from PIL import UnidentifiedImageError
 from uuid import uuid4
 from autocomplete_api import autocomplete_api
+from auth import auth_bp
+from login_required import login_required
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
@@ -23,18 +25,21 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
 app.register_blueprint(autocomplete_api)
+app.register_blueprint(auth_bp)
 app.db = db
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/')
+@login_required
 def index():
     products = list(get_product_collection(db).find())
     return render_template('index.html', products=products, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
+@login_required
 def nuevo_producto():
     categorias = list(get_category_collection(db).find())
     if request.method == 'POST':
@@ -85,6 +90,7 @@ def nuevo_producto():
 
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
+@login_required
 def editar_producto(id):
     from urllib.parse import urlparse
     collection = get_product_collection(db)
@@ -160,6 +166,7 @@ def editar_producto(id):
 
 
 @app.route('/producto/<id>/eliminar', methods=['POST'])
+@login_required
 def eliminar_producto(id):
     collection = get_product_collection(db)
     collection.delete_one({'_id': ObjectId(id)})
@@ -168,11 +175,14 @@ def eliminar_producto(id):
 
 
 @app.route('/categorias', methods=['GET'])
+@login_required
 def ver_categorias():
     categorias = list(get_category_collection(db).find())
     return render_template('categorias.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
+
 @app.route('/categorias/nueva', methods=['POST'])
+@login_required
 def nueva_categoria():
     nombre = request.form['nombre']
     descripcion = request.form.get('descripcion', '')
@@ -181,7 +191,9 @@ def nueva_categoria():
         get_category_collection(db).insert_one(data)
     return redirect(url_for('ver_categorias'))
 
+
 @app.route('/categorias/<id>/editar', methods=['POST'])
+@login_required
 def editar_categoria(id):
     nombre = request.form['nombre']
     descripcion = request.form.get('descripcion', '')
@@ -190,7 +202,9 @@ def editar_categoria(id):
         get_category_collection(db).update_one({'_id': ObjectId(id)}, {'$set': data})
     return redirect(url_for('ver_categorias'))
 
+
 @app.route('/guardar_categorias', methods=['POST'])
+@login_required
 def guardar_categorias():
     from bson.objectid import ObjectId
     collection = get_category_collection(db)
@@ -207,12 +221,15 @@ def guardar_categorias():
                 collection.update_one({'_id': ObjectId(cid)}, {'$set': {'nombre': nombre, 'descripcion': descripcion}})
     return redirect(url_for('ver_categorias'))
 
+
 @app.route('/tasa_dolar', methods=['GET'])
+@login_required
 def tasa_dolar():
     return render_template('tasa_dolar.html', show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/api/productos')
+@login_required
 def api_productos():
     productos = list(get_product_collection(db).find())
     # Solo enviar nombre y precio en la respuesta
@@ -225,6 +242,7 @@ def api_productos():
 
 
 @app.route('/actualizar_precios', methods=['POST'])
+@login_required
 def actualizar_precios():
     data = request.get_json()
     tasa = data.get('tasa')
@@ -259,6 +277,7 @@ def actualizar_precios():
 
 
 @app.route('/producto/buscar')
+@login_required
 def buscar_producto():
     # Recoge todos los posibles filtros
     query = request.args.get('q', '').strip()
@@ -310,6 +329,7 @@ def buscar_producto():
 
 
 @app.route('/tasa_cambio', methods=['GET'])
+@login_required
 def tasa_cambio():
     """
     Devuelve la tasa de cambio actual (oficial y paralelo) desde la API https://ve.dolarapi.com/v1/dolares
