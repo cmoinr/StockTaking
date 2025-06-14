@@ -36,6 +36,7 @@ def login():
             user = User(user_doc['username'], user_doc['email'], user_doc['password_hash'])
             if user.check_password(password):
                 session['user_email'] = user.email
+                session['user_id'] = str(user_doc['_id'])
                 flash('Inicio de sesión exitoso.')
                 return redirect(url_for('index'))
         flash('Credenciales incorrectas.')

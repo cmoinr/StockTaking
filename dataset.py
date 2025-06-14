@@ -41,21 +41,30 @@ for cat in categorias:
 # Productos de ejemplo
 productos = [
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946ace8"
+    },
     "nombre": "Botines Adidas Predator",
     "caracteristicas": {
         "color": "Negro/Rojo",
         "talla": "42",
         "deporte": "futbol campo"
     },
-    "stock": 12,
+    "stock": 10,
     "categoria": "Calzado",
     "precio": {
         "$": 80,
         "bs": 7832.25
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/predator.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/2b0c665f160b49d5b0d4175739554cfa.jpg",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946ace9"
+    },
     "nombre": "Botines Nike Mercurial AIR",
     "caracteristicas": {
         "color": "Azul",
@@ -64,12 +73,18 @@ productos = [
     "stock": 10,
     "categoria": "Calzado",
     "precio": {
-        "$": 90,
-        "bs": 8811.28
+        "$": 95,
+        "bs": 9704.91
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/mercurial.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/a7bca452265c497492e381af5bc51b05.jpg",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946acea"
+    },
     "nombre": "Zapatillas Futsal Joma Top Flex",
     "caracteristicas": {
         "color": "Blanco/Azul",
@@ -79,12 +94,18 @@ productos = [
     "stock": 7,
     "categoria": "Calzado",
     "precio": {
-        "$": 90,
-        "bs": 8811.28
+        "$": 88,
+        "bs": 8989.82
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/top-flex.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/top-flex.png",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946aceb"
+    },
     "nombre": "Zapatillas Futsal Adidas Sala",
     "caracteristicas": {
         "color": "Negro",
@@ -95,12 +116,18 @@ productos = [
     "stock": 10,
     "categoria": "Calzado",
     "precio": {
-        "$": 75,
-        "bs": 7342.73
+        "$": 77,
+        "bs": 7866.09
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/sala.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/sala.png",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946acec"
+    },
     "nombre": "Balón Nike Futsal Pro",
     "caracteristicas": {
         "tamaño": "4",
@@ -110,12 +137,18 @@ productos = [
     "stock": 15,
     "categoria": "Balones",
     "precio": {
-        "$": 35,
-        "bs": 3426.61
+        "$": 32,
+        "bs": 3269.02
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/nike-pro.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/a645675d62a3465c9cebb2949acc6d65.jpg",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946aced"
+    },
     "nombre": "Balón Adidas Tango",
     "caracteristicas": {
         "tamaño": "5",
@@ -124,12 +157,18 @@ productos = [
     "stock": 10,
     "categoria": "Balones",
     "precio": {
-        "$": 28,
-        "bs": 2741.29
+        "$": 21,
+        "bs": 2145.3
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/adidas-tango.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/5179fa9b07984d1792c1fbe3bc382430.jpg",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946acee"
+    },
     "nombre": "Balón Penalty Campo",
     "caracteristicas": {
         "tamaño": "5",
@@ -139,12 +178,18 @@ productos = [
     "stock": 7,
     "categoria": "Balones",
     "precio": {
-        "$": 32,
-        "bs": 3132.9
+        "$": 30,
+        "bs": 3064.71
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/penalty-balon.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/penalty-balon.png",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946acef"
+    },
     "nombre": "Camiseta Oficial Argentina 2022",
     "caracteristicas": {
         "talla": "M",
@@ -154,12 +199,18 @@ productos = [
     "stock": 7,
     "categoria": "Indumentaria",
     "precio": {
-        "$": 64,
-        "bs": 6265.8
+        "$": 62.99,
+        "bs": 6434.87
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/argentina-22.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/argentina-22.png",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
     },
     {
+    "_id": {
+        "$oid": "684d7babcc6bdce6d946acf0"
+    },
     "nombre": "Camiseta Oficial Brasil 2022",
     "caracteristicas": {
         "talla": "S-XL",
@@ -170,10 +221,53 @@ productos = [
     "stock": 4,
     "categoria": "Indumentaria",
     "precio": {
-        "$": 75,
-        "bs": 7342.73
+        "$": 74,
+        "bs": 7559.62
     },
-    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/brasil-22.png"
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/brasil-22.png",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
+    },
+    {
+    "_id": {
+        "$oid": "684d8ffd6551fb69bd8d2aa0"
+    },
+    "nombre": "canilleras fut",
+    "caracteristicas": {
+        "color": "azul",
+        "marca": "puma"
+    },
+    "stock": 5,
+    "categoria": "Accesorios",
+    "precio": {
+        "$": 12.55,
+        "bs": 1282.07
+    },
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/b9982775b8ef400fa3fd31f29b61af58.jpg",
+    "user_id": {
+        "$oid": "684df1c9049b0ea71d0178ce"
+    }
+    },
+    {
+    "_id": {
+        "$oid": "684e01c86ed1f852fc5b03ae"
+    },
+    "nombre": "cinta capitan",
+    "caracteristicas": {
+        "color": "rojo",
+        "marca": "nike"
+    },
+    "stock": 3,
+    "categoria": "Accesorios",
+    "precio": {
+        "$": 8,
+        "bs": 817.26
+    },
+    "user_id": {
+        "$oid": "684e017a6ed1f852fc5b03ad"
+    },
+    "imagen": "https://storage.googleapis.com/stocktaking-bucket/uploads/161ab900745f4ec8a81db9df709a2f4b.jpg"
     }
 ]
 
@@ -184,3 +278,22 @@ for prod in productos:
             prod_col.insert_one(prod)
 
 print("Categorías y productos insertados correctamente.")
+
+# USERs CREADO
+# {
+#   "_id": {
+#     "$oid": "684df1c9049b0ea71d0178ce"
+#   },
+#   "username": "cmoinr",
+#   "email": "cmoinr@hotmail.com",
+#   "password_hash": "scrypt:32768:8:1$FR0tmHeViFtn2Tjc$947786857fb10dcb33f7f0d3d38f0bb2005a52a3ed4e84d2e7e6444d8436cceefbd760c0f38c65e62c0596a49ac7c562ac97d281770022c2cd4a89ab48ffeeaa"
+# }
+
+# {
+#   "_id": {
+#     "$oid": "684e017a6ed1f852fc5b03ad"
+#   },
+#   "username": "aneki",
+#   "email": "aneki@gmail.com",
+#   "password_hash": "scrypt:32768:8:1$afArewrKmxK9CRXu$b7d2030b3d8ca72ec1b9329d57a45e4d8b4ca7fafa62449bd4c61eb71426ebb5a511fd40d5538aed7b51cc647253c1458fa827c29666f8e40331c8b6119cd5ca"
+# }

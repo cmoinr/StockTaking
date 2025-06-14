@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product
 from models.category import get_category_collection, validate_category
+from models.user import User
 from bson.objectid import ObjectId
 import os
 import requests
@@ -13,6 +14,7 @@ from uuid import uuid4
 from autocomplete_api import autocomplete_api
 from auth import auth_bp
 from login_required import login_required
+
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
@@ -34,7 +36,7 @@ def allowed_file(filename):
 @app.route('/')
 @login_required
 def index():
-    products = list(get_product_collection(db).find())
+    products = list(get_product_collection(db).find({'user_id': ObjectId(session['user_id'])}))
     return render_template('index.html', products=products, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
@@ -51,7 +53,8 @@ def nuevo_producto():
             'precio': {
                 '$': float(request.form.get('precio_$', 0)),
                 'bs': float(request.form.get('precio_bs', 0))
-            }
+            },
+            'user_id': ObjectId(session['user_id'])
         }
         # Procesar características dinámicas
         for key in request.form:
@@ -108,7 +111,8 @@ def editar_producto(id):
             'precio': {
                 '$': float(request.form.get('precio_$', 0)),
                 'bs': float(request.form.get('precio_bs', 0))
-            }
+            },
+            'user_id': ObjectId(session['user_id'])
         }
         # Procesar características dinámicas correctamente (tantas como existan)
         car_nombres = [k for k in request.form if k.startswith('car_nombre_')]
@@ -356,3 +360,16 @@ def tasa_cambio():
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    db = app.db
+    users_col = db['users']
+    user_doc = users_col.find_one({'email': session['user_email']})
+    if not user_doc:
+        flash('Usuario no encontrado.')
+        return redirect(url_for('index'))
+    user = User.from_document(user_doc)
+    return render_template('dashboard.html', user=user)
