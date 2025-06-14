@@ -4,7 +4,7 @@
         {
             "label": "Run Flask App",
             "type": "shell",
-            "command": ".venv\\Scripts\\Activate.ps1; set FLASK_APP=app && set FLASK_ENV=development && flask run",
+            "command": "$env:FLASK_APP='app'; $env:FLASK_ENV='development'; .venv\\Scripts\\python.exe -m flask run",
             "group": "build",
             "isBackground": true,
             "problemMatcher": []

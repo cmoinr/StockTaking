@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from models import get_product_collection, validate_product, get_category_collection
+from models import get_product_collection, validate_product
+from models.category import get_category_collection, validate_category
 from bson.objectid import ObjectId
 import os
 import requests
@@ -24,7 +25,7 @@ def allowed_file(filename):
 @app.route('/')
 def index():
     products = list(get_product_collection(db).find())
-    return render_template('index.html', products=products)
+    return render_template('index.html', products=products, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
@@ -63,7 +64,7 @@ def nuevo_producto():
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('nuevo_producto.html', categorias=categorias)
+    return render_template('nuevo_producto.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
@@ -125,7 +126,7 @@ def editar_producto(id):
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('editar_producto.html', producto=producto, categorias=categorias)
+    return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/<id>/eliminar', methods=['POST'])
@@ -141,7 +142,7 @@ def buscar_producto():
     query = request.args.get('q', '')
     collection = get_product_collection(db)
     products = list(collection.find({'nombre': {'$regex': query, '$options': 'i'}}))
-    return render_template('buscar_producto.html', products=products, query=query)
+    return render_template('buscar_producto.html', products=products, query=query, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/busqueda_avanzada1')
@@ -150,7 +151,7 @@ def busqueda_avanzada1():
     valor = request.args.get('valor')
     collection = get_product_collection(db)
     products = list(collection.find({f'caracteristicas.{caracteristica}': valor}))
-    return render_template('busqueda_avanzada1.html', products=products, caracteristica=caracteristica, valor=valor)
+    return render_template('busqueda_avanzada1.html', products=products, caracteristica=caracteristica, valor=valor, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/busqueda_avanzada2')
@@ -159,7 +160,7 @@ def busqueda_avanzada2():
     max_stock = int(request.args.get('max', 1000))
     collection = get_product_collection(db)
     products = list(collection.find({'stock': {'$gte': min_stock, '$lte': max_stock}}))
-    return render_template('busqueda_avanzada2.html', products=products, min_stock=min_stock, max_stock=max_stock)
+    return render_template('busqueda_avanzada2.html', products=products, min_stock=min_stock, max_stock=max_stock, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/caracteristicas_unicas')
@@ -212,6 +213,47 @@ def tasa_cambio():
     except Exception as e:
         print(f"Error al obtener la tasa de dolarapi.com: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/categorias', methods=['GET'])
+def ver_categorias():
+    categorias = list(get_category_collection(db).find())
+    return render_template('categorias.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+
+@app.route('/categorias/nueva', methods=['POST'])
+def nueva_categoria():
+    nombre = request.form['nombre']
+    descripcion = request.form.get('descripcion', '')
+    data = {'nombre': nombre, 'descripcion': descripcion}
+    if validate_category(data):
+        get_category_collection(db).insert_one(data)
+    return redirect(url_for('ver_categorias'))
+
+@app.route('/categorias/<id>/editar', methods=['POST'])
+def editar_categoria(id):
+    nombre = request.form['nombre']
+    descripcion = request.form.get('descripcion', '')
+    data = {'nombre': nombre, 'descripcion': descripcion}
+    if validate_category(data):
+        get_category_collection(db).update_one({'_id': ObjectId(id)}, {'$set': data})
+    return redirect(url_for('ver_categorias'))
+
+@app.route('/guardar_categorias', methods=['POST'])
+def guardar_categorias():
+    from bson.objectid import ObjectId
+    collection = get_category_collection(db)
+    # Recorrer todas las categorías existentes
+    for c in collection.find():
+        cid = str(c['_id'])
+        nombre = request.form.get(f'nombre_{cid}')
+        descripcion = request.form.get(f'descripcion_{cid}')
+        eliminar = request.form.get(f'eliminar_{cid}')
+        if eliminar == '1':
+            collection.delete_one({'_id': ObjectId(cid)})
+        else:
+            if nombre is not None:
+                collection.update_one({'_id': ObjectId(cid)}, {'$set': {'nombre': nombre, 'descripcion': descripcion}})
+    return redirect(url_for('ver_categorias'))
 
 
 if __name__ == '__main__':

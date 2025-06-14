@@ -12,6 +12,10 @@ body {
     margin: 0;
     padding: 0;
 }
+body.dark-mode {
+    background-color: #181c1f !important;
+    color: #e0e0e0 !important;
+}
 .container {
     max-width: 900px;
     width: 100%;
@@ -22,9 +26,17 @@ body {
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
     padding: 32px 40px 40px 40px;
 }
+body.dark-mode .container {
+    background: #23272b;
+    color: #e0e0e0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
 h1 {
     color: #2c3e50;
     margin-bottom: 24px;
+}
+body.dark-mode h1, body.dark-mode th {
+    color: #e0e0e0;
 }
 a.button {
     display: inline-block;
@@ -42,17 +54,28 @@ a.button:hover {
     color: #fff;
     border-color: #1ec6b6;
 }
+body.dark-mode a.button:hover, body.dark-mode button:hover {
+    background: #1ec6b6;
+    color: #fff;
+}
 form {
     margin-bottom: 18px;
 }
-input[type="text"], input[type="number"] {
+input[type="text"], input[type="number"], select, textarea {
     padding: 7px 10px;
     border: 1px solid #cfd8dc;
     border-radius: 4px;
     margin-right: 8px;
     font-size: 1em;
+    font-family: inherit;
+}
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+    background: #23272b;
+    color: #e0e0e0;
+    border: 1px solid #444;
 }
 button {
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
     background: #1ec6b6;
     color: #fff;
     border: 1.5px solid #0e5e5a;
@@ -72,14 +95,24 @@ table {
     margin-top: 18px;
     background: #fafbfc;
 }
+body.dark-mode table {
+    background: #23272b;
+}
 th, td {
     padding: 12px 10px;
     border-bottom: 1px solid #e0e0e0;
     text-align: left;
 }
+body.dark-mode td {
+    border-bottom: 1px solid #333;
+}
 th {
     background: #f0f4f8;
     color: #2c3e50;
+}
+body.dark-mode th {
+    background: #23272b;
+    color: #e0e0e0;
 }
 tr:last-child td {
     border-bottom: none;
@@ -108,6 +141,10 @@ tr:last-child td {
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1.5px solid rgba(44,62,80,0.08);
 }
+body.dark-mode .navbar {
+    background: rgba(24,28,31,0.85);
+    border-bottom: 1.5px solid rgba(44,62,80,0.18);
+}
 .navbar-title {
     display: flex;
     align-items: baseline;
@@ -116,12 +153,12 @@ tr:last-child td {
 }
 .main-title {
     font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
-    font-size: 2.3em;
+    font-size: 1.75em;
     font-weight: 900;
     color: #1ec6b6;
     letter-spacing: 1.5px;
     text-shadow:
-        2px 2px 4px rgba(30,198,182,0.15),
+        2px 2px 4px rgba(30, 198, 181, 0.10),
         0 0 2px #fff,
         0 0 6px #fff,
         1px 1px 0 #fff,
@@ -343,6 +380,45 @@ tr:last-child td {
     text-align: center;
 }
 
+.switch-darkmode {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+    margin-right: 18px;
+    vertical-align: middle;
+}
+.switch-darkmode input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+.switch-darkmode input:checked + .slider {
+    background-color: #1ec6b6;
+}
+.switch-darkmode input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
 @media (max-width: 700px) {
     .container { padding: 10px; max-width: 100vw; }
     table, thead, tbody, th, td, tr { display: block; }
@@ -358,4 +434,22 @@ tr:last-child td {
     .form-group input, .form-group select, .add-car-btn, .form-actions .button { max-width: 98vw; }
     .container { padding: 4px; }
 }
+
+/* Descripción más pequeña y campo flexible */
+td.descripcion-col input[type="text"] {
+    font-size: 0.95em;
+    width: 100%;
+    min-width: 80px;
+    max-width: 350px;
+    box-sizing: border-box;
+    white-space: normal;
+}
+
+/* Ajuste para la columna de descripción */
+td.descripcion-col {
+    width: 35%;
+    min-width: 120px;
+    max-width: 350px;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');

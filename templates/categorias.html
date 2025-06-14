@@ -1,0 +1,65 @@
+{% block title %}
+    StockTaking | Categorías
+{% endblock %}
+
+
+{% extends 'layout.html' %}
+
+
+
+{% block content %}
+    <h1>Categorías</h1>
+    <form action="{{ url_for('guardar_categorias') }}" method="post" id="form-categorias">
+        <table>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+            </tr>
+            {% for c in categorias %}
+            <tr>
+                <td><input type="text" name="nombre_{{ c._id }}" value="{{ c['nombre'] }}" required></td>
+                <td class="descripcion-col"><input type="text" name="descripcion_{{ c._id }}" value="{{ c['descripcion'] }}"></td>
+                <td style="text-align:center;">
+                    <button type="button" class="delete-btn" onclick="eliminarCategoria('{{ c._id }}')" title="Eliminar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    </button>
+                    <input type="hidden" name="eliminar_{{ c._id }}" id="eliminar_{{ c._id }}" value="0">
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <div style="text-align:center; margin: 24px 0 12px 0;">
+            <button type="submit" class="button">Guardar</button>
+        </div>
+    </form>
+    <div style="text-align:center; margin-top:24px;">
+        <button class="button" onclick="mostrarFormNuevaCategoria()">Añadir otra categoría</button>
+    </div>
+    <div id="form-nueva-categoria" style="display:none; margin: 0 auto; max-width:400px;">
+        <form action="{{ url_for('nueva_categoria') }}" method="post" style="margin-top:18px;">
+            <input type="text" name="nombre" placeholder="Nombre de la categoría" required style="margin-bottom:8px; width:100%;"><br>
+            <input type="text" name="descripcion" placeholder="Descripción" style="margin-bottom:8px; width:100%; font-size:0.95em;"><br>
+            <button type="submit" class="button">Añadir</button>
+            <button type="button" class="button" onclick="ocultarFormNuevaCategoria()">Cancelar</button>
+        </form>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    <script>
+    function mostrarFormNuevaCategoria() {
+        document.getElementById('form-nueva-categoria').style.display = 'block';
+    }
+    function ocultarFormNuevaCategoria() {
+        document.getElementById('form-nueva-categoria').style.display = 'none';
+    }
+    function eliminarCategoria(id) {
+        if (confirm('¿Eliminar esta categoría?')) {
+            document.getElementById('eliminar_' + id).value = '1';
+            document.getElementById('form-categorias').submit();
+        }
+    }
+    </script>
+{% endblock %}
