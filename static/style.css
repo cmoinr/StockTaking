@@ -169,7 +169,7 @@ body.dark-mode .navbar {
 .subtitle {
     font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
     font-size: 0.9em;
-    color: #0e5e5a;
+    color: #ffffff;
     font-weight: 7500;
     margin-left: 4px;
     letter-spacing: 0.5px;
@@ -418,6 +418,145 @@ body.dark-mode .navbar {
 .switch-darkmode input:checked + .slider:before {
     transform: translateX(22px);
 }
+
+.exchange-rate-card {
+    max-width: 400px;
+    margin: 40px auto 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 32px 32px 24px 32px;
+    text-align: center;
+    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+body.dark-mode .exchange-rate-card {
+    background: #23272b;
+    color: #e0e0e0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+}
+.tasa-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 0 0;
+    font-size: 1.15em;
+}
+.tasa-label {
+    font-weight: 600;
+    color: #1ec6b6;
+}
+.tasa-value {
+    font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+.tasa-promedio {
+    border-top: 1px solid #e0e0e0;
+    margin-top: 22px;
+    padding-top: 16px;
+    font-size: 1.18em;
+}
+.tasa-fecha {
+    margin-top: 18px;
+    font-size: 0.98em;
+    color: #888;
+}
+body.dark-mode .tasa-label {
+    color: #1ec6b6;
+}
+body.dark-mode .tasa-fecha {
+    color: #aaa;
+}
+
+.flashes {
+    margin-bottom: 18px;
+}
+.alert {
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    font-family: inherit;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    border: 1.5px solid #1ec6b6;
+    background: #e6fcfa;
+    color: #0e5e5a;
+}
+.alert-success {
+    background: #e6fcf0;
+    color: #1a7f4e;
+    border-color: #1ec6b6;
+}
+.alert-error, .alert-danger {
+    background: #ffeaea;
+    color: #b71c1c;
+    border-color: #e57373;
+}
+body.dark-mode .alert {
+    background: #23272b;
+    color: #1ec6b6;
+    border-color: #1ec6b6;
+}
+body.dark-mode .alert-success {
+    background: #1a2e24;
+    color: #1ec6b6;
+}
+body.dark-mode .alert-error, body.dark-mode .alert-danger {
+    background: #2e1a1a;
+    color: #ffb3b3;
+    border-color: #e57373;
+}
+
+/* --- MODO OSCURO: Mejor contraste y elegancia en formularios de producto --- */
+body.dark-mode .form-group label,
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    color: #e0e0e0 !important;
+}
+body.dark-mode .form-group input[type="text"],
+body.dark-mode .form-group input[type="number"],
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea {
+    background: #23272b !important;
+    color: #e0e0e0 !important;
+    border: 1.5px solid #1ec6b6 !important;
+    box-shadow: none !important;
+    transition: border 0.18s, background 0.18s;
+}
+body.dark-mode .form-group input[type="text"]::placeholder,
+body.dark-mode .form-group input[type="number"]::placeholder {
+    color: #b0b8be !important;
+    opacity: 1;
+}
+body.dark-mode .form-group input[type="text"]:focus,
+body.dark-mode .form-group input[type="number"]:focus,
+body.dark-mode .form-group select:focus {
+    border-color: #1ec6b6 !important;
+    background: #23272b !important;
+    color: #fff !important;
+}
+body.dark-mode .form-group input[type="text"]:hover,
+body.dark-mode .form-group input[type="number"]:hover,
+body.dark-mode .form-group select:hover {
+    background: #23272b !important;
+    color: #fff !important;
+}
+body.dark-mode .form-group input[type="file"] {
+    background: transparent !important;
+    color: #e0e0e0 !important;
+}
+body.dark-mode .form-group .add-car-btn {
+    background: #23272b !important;
+    color: #1ec6b6 !important;
+    border: 1.5px solid #1ec6b6 !important;
+}
+body.dark-mode .form-group .add-car-btn:hover {
+    background: #1ec6b6 !important;
+    color: #fff !important;
+}
+/* --- Fin de mejoras modo oscuro formularios producto --- */
 
 @media (max-width: 700px) {
     .container { padding: 10px; max-width: 100vw; }

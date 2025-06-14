@@ -75,6 +75,10 @@
             <button type="submit" class="button">Guardar cambios</button>
         </div>
     </form>
+<!--
+    Se asegura que los labels y textos tengan contraste en modo oscuro usando las clases y estilos globales.
+    No se requieren cambios directos aquí, ya que los estilos CSS globales lo controlan.
+-->
 {% endblock %}    
 
 
@@ -141,14 +145,14 @@
     fetch('/tasa_cambio')
       .then(res => res.json())
       .then(data => {
-        if (data.tasa) {
-          tasaCambio = data.tasa;
+        if (data.oficial.promedio) {
+          tasaCambio = data.oficial.promedio;
           document.getElementById('tasa-actual').textContent = tasaCambio;
           // Mostrar fecha si viene en la respuesta, si no, usar hoy
-          let fecha = data.fecha;
-          if (!fecha) {
-            const hoy = new Date();
-            fecha = hoy.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          let fecha = data.oficial.fecha;
+          if (fecha) {
+            const hoy = new Date(fecha);
+            fecha = hoy.toLocaleString('es-VE');
           }
           document.getElementById('tasa-fecha').textContent = `(${fecha})`;
         } else {

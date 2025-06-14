@@ -1,0 +1,137 @@
+{% extends 'layout.html' %}
+{% block title %}Tasa de Cambio{% endblock %}
+{% block content %}
+<div class="tasa-dolar-container">
+  <h1>Tasa de Cambio</h1>
+  <div class="exchange-rate-card">
+      <div id="tasa-loading" style="text-align:center; color:#888;">Cargando tasas...</div>
+      <div id="tasa-content" style="display:none;">
+          <div class="tasa-row">
+              <span class="tasa-label">Oficial:</span>
+              <span class="tasa-value" id="tasa-oficial"></span>
+          </div>
+          <div class="tasa-row">
+              <span class="tasa-label">Paralelo:</span>
+              <span class="tasa-value" id="tasa-paralelo"></span>
+          </div>
+          <div class="tasa-row tasa-promedio">
+              <span class="tasa-label">Promedio:</span>
+              <span class="tasa-value" id="tasa-promedio"></span>
+          </div>
+          <div class="tasa-fecha" id="tasa-fecha"></div>
+      </div>
+  </div>
+  <div class="update-prices-card">
+      <h2>Actualizar precios de productos</h2>
+      <form id="form-actualizar-precios" style="margin-bottom:0; display: flex; flex-direction: column; align-items: center;">
+          <label style="margin-bottom: 8px;">Selecciona la tasa a aplicar:</label>
+          <div style="margin: 10px 0 18px 0; display: flex; justify-content: center; gap: 18px;">
+              <label><input type="radio" name="tasa" value="oficial" checked> Oficial</label>
+              <label><input type="radio" name="tasa" value="paralelo"> Paralelo</label>
+              <label><input type="radio" name="tasa" value="promedio"> Promedio</label>
+          </div>
+          <button type="button" class="button" style="margin-top: 8px;" onclick="vistaPreviaActualizacion()">Vista previa y actualizar</button>
+      </form>
+      <div id="preview-modal" class="modal" style="display:none;">
+          <div class="modal-content">
+              <span class="close" onclick="cerrarModal()">&times;</span>
+              <h3>Vista previa de actualización de precios</h3>
+              <div id="preview-table-container" style="max-height:300px;overflow:auto;"></div>
+              <button class="button" onclick="confirmarActualizacion()">Confirmar actualización</button>
+          </div>
+      </div>
+  </div>
+</div>
+<style>
+.tasa-dolar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  padding: 20px 0 0 0;
+}
+.exchange-rate-card, .update-prices-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+}
+.update-prices-card h2 {
+  margin-bottom: 18px;
+}
+.update-prices-card form label {
+  margin-bottom: 8px;
+}
+.update-prices-card form button {
+  margin-top: 8px;
+}
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+let tasas = {};
+fetch("{{ url_for('tasa_cambio') }}")
+  .then(res => res.json())
+  .then(data => {
+    tasas = data;
+    document.getElementById('tasa-loading').style.display = 'none';
+    document.getElementById('tasa-content').style.display = 'block';
+    if(data.oficial && data.paralelo) {
+      document.getElementById('tasa-oficial').textContent = data.oficial.promedio + ' Bs/USD';
+      document.getElementById('tasa-paralelo').textContent = data.paralelo.promedio + ' Bs/USD';
+      const prom = ((parseFloat(data.oficial.promedio) + parseFloat(data.paralelo.promedio)) / 2).toFixed(3);
+      document.getElementById('tasa-promedio').textContent = prom + ' Bs/USD';
+      let fecha = data.oficial.fecha || data.paralelo.fecha;
+      if(fecha) {
+        const f = new Date(fecha);
+        document.getElementById('tasa-fecha').textContent = 'Actualizado: ' + f.toLocaleString('es-VE');
+      }
+    } else {
+      document.getElementById('tasa-content').innerHTML = '<div style="color:#c00;">No se pudo obtener la tasa de cambio.</div>';
+    }
+  })
+  .catch(() => {
+    document.getElementById('tasa-loading').textContent = 'Error al cargar la tasa de cambio.';
+  });
+
+function vistaPreviaActualizacion() {
+    const tasaSel = document.querySelector('input[name="tasa"]:checked').value;
+    let tasaValor = 0;
+    if (tasaSel === 'oficial') tasaValor = tasas.oficial.promedio;
+    else if (tasaSel === 'paralelo') tasaValor = tasas.paralelo.promedio;
+    else tasaValor = ((parseFloat(tasas.oficial.promedio) + parseFloat(tasas.paralelo.promedio)) / 2).toFixed(3);
+    fetch('/api/productos')
+      .then(res => res.json())
+      .then(productos => {
+        let html = '<table style="width:100%;font-size:0.98em;"><tr><th>Nombre</th><th>Precio $</th><th>Precio Bs (nuevo)</th></tr>';
+        productos.forEach(p => {
+          let precioUSD = p.precio && p.precio['$'] ? parseFloat(p.precio['$']) : 0;
+          let nuevoBs = (precioUSD * tasaValor).toFixed(2);
+          html += `<tr><td>${p.nombre}</td><td>$${precioUSD}</td><td>Bs ${nuevoBs}</td></tr>`;
+        });
+        html += '</table>';
+        document.getElementById('preview-table-container').innerHTML = html;
+        document.getElementById('preview-modal').style.display = 'block';
+      });
+}
+function cerrarModal() {
+    document.getElementById('preview-modal').style.display = 'none';
+}
+function confirmarActualizacion() {
+    const tasaSel = document.querySelector('input[name="tasa"]:checked').value;
+    fetch('/actualizar_precios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tasa: tasaSel })
+    })
+    .then(res => res.json())
+    .then(data => {
+        cerrarModal();
+        if(data.success && data.redirect) {
+            window.location.href = data.redirect;
+        }
+        // Si no hay redirección, podrías mostrar un error o fallback aquí si lo deseas
+    });
+}
+</script>
+{% endblock %}
