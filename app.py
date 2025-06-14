@@ -86,6 +86,7 @@ def nuevo_producto():
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
 def editar_producto(id):
+    from urllib.parse import urlparse
     collection = get_product_collection(db)
     producto = collection.find_one({'_id': ObjectId(id)})
     categorias = list(get_category_collection(db).find())
@@ -115,8 +116,17 @@ def editar_producto(id):
         imagen = request.files.get('imagen')
         eliminar_imagen = request.form.get('eliminar_imagen') == '1'
         imagen_anterior = producto.get('imagen')
-        if imagen and allowed_file(imagen.filename):
-            try:
+        if imagen and allowed_file(imagen.filename):            
+            # Eliminar la imagen anterior si existe
+            if imagen_anterior:                    
+                try:
+                    parsed = urlparse(imagen_anterior)
+                    filename = os.path.basename(parsed.path)
+                    delete_file_from_gcs(filename)            
+                except Exception as e:
+                    update['imagen'] = None
+                    print(f'Eliminacion forzada de la imagen: {str(e)}')
+            try:        
                 # Generar un nombre único para la imagen usando uuid4 y mantener la extensión original
                 ext = imagen.filename.rsplit('.', 1)[1].lower()
                 unique_filename = f"{uuid4().hex}.{ext}"
@@ -124,12 +134,6 @@ def editar_producto(id):
                 comprimida.filename = unique_filename
                 public_url = upload_file_to_gcs(comprimida, force_jpeg=True)
                 update['imagen'] = public_url
-                # Eliminar la imagen anterior si existe
-                if imagen_anterior:
-                    from urllib.parse import urlparse
-                    parsed = urlparse(imagen_anterior)
-                    filename = os.path.basename(parsed.path)
-                    delete_file_from_gcs(filename)
             except UnidentifiedImageError:
                 flash('La imagen subida no es válida o está corrupta.')
                 return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
@@ -137,11 +141,13 @@ def editar_producto(id):
                 flash(f'Error al procesar la imagen: {str(e)}')
                 return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
         elif eliminar_imagen and imagen_anterior:
-            from urllib.parse import urlparse
-            parsed = urlparse(imagen_anterior)
-            filename = os.path.basename(parsed.path)
-            delete_file_from_gcs(filename)
-            update['imagen'] = None
+            try:
+                parsed = urlparse(imagen_anterior)
+                filename = os.path.basename(parsed.path)
+                delete_file_from_gcs(filename)            
+            except Exception as e:
+                update['imagen'] = None
+                print(f'Eliminacion forzada de la imagen: {str(e)}')            
         else:
             update['imagen'] = producto.get('imagen')
         if validate_product(update):

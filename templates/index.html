@@ -7,7 +7,14 @@
 
 
 {% block content %}
+    <div class="tasa-selector-horizontales" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
+        <button type="button" href="url_for('index')" class="filtro-btn active" data-tasa="oficial">Inventario</button>
+        <button type="button" href="url_for('index')" class="filtro-btn" data-tasa="paralelo">Ventas</button>
+        <button type="button" href="url_for('index')" class="filtro-btn" data-tasa="promedio">Pedidos</button>
+    </div>
+
     <h1>Inventario</h1>
+
     <table>
         <tr>
             <th>Nombre</th>
@@ -65,11 +72,61 @@
             {% endfor %}
         {% endif %}
     </table>
+<style>
+.tasa-dolar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  padding: 20px 0 0 0;
+}
+.exchange-rate-card, .update-prices-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+}
+.update-prices-card h2 {
+  margin-bottom: 18px;
+}
+.tasa-selector-horizontales .filtro-btn {
+  background: #e0f7fa;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: large;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tasa-selector-horizontales .filtro-btn.active {
+  background: #1ec6b6;
+  color: #fff;
+}
+.update-prices-card form label {
+  margin-bottom: 8px;
+}
+.update-prices-card form button {
+  margin-top: 8px;
+}
+</style>
 {% endblock %}
 
 
 {% block scripts %}
     <script>
+    // Selector horizontal de tasa
+    const tasaBtns = document.querySelectorAll('.tasa-selector-horizontales .filtro-btn');
+    const tasaHidden = document.getElementById('tasa-hidden');
+    tasaBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        tasaBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        tasaHidden.value = this.getAttribute('data-tasa');
+    });
+    });
+
     function mostrarImagenGrandeTabla(imgElem) {
         const modal = document.createElement('div');
         modal.style.position = 'fixed';
