@@ -13,7 +13,7 @@ def obtener_tasa_cambio():
     try:
         resp = requests.get('http://127.0.0.1:5000/tasa_cambio', timeout=5)
         data = resp.json()
-        return float(data['tasa'])
+        return float(data.oficial.promedio)
     except Exception as e:
         print(f"No se pudo obtener la tasa de cambio automáticamente: {e}")
         return 40.0  # Valor por defecto si falla

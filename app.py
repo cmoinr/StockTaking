@@ -9,6 +9,8 @@ import requests
 from gcs_utils import upload_file_to_gcs, delete_file_from_gcs
 from compress_utils import compress_image
 from PIL import UnidentifiedImageError
+from uuid import uuid4
+from autocomplete_api import autocomplete_api
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
@@ -20,6 +22,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
 
 mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
+app.register_blueprint(autocomplete_api)
+app.db = db
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -56,8 +60,11 @@ def nuevo_producto():
         imagen = request.files.get('imagen')
         if imagen and allowed_file(imagen.filename):
             try:
+                # Generar un nombre único para la imagen usando uuid4 y mantener la extensión original
+                ext = imagen.filename.rsplit('.', 1)[1].lower()
+                unique_filename = f"{uuid4().hex}.{ext}"
                 comprimida = compress_image(imagen)
-                comprimida.filename = 'comprimida.jpg'
+                comprimida.filename = unique_filename
                 public_url = upload_file_to_gcs(comprimida, force_jpeg=True)
                 data['imagen'] = public_url
             except UnidentifiedImageError:
@@ -108,19 +115,16 @@ def editar_producto(id):
         imagen = request.files.get('imagen')
         eliminar_imagen = request.form.get('eliminar_imagen') == '1'
         imagen_anterior = producto.get('imagen')
-        if eliminar_imagen and imagen_anterior:
-            if imagen_anterior:
-                from urllib.parse import urlparse
-                parsed = urlparse(imagen_anterior)
-                filename = os.path.basename(parsed.path)
-                delete_file_from_gcs(filename)
-            update['imagen'] = None
-        elif imagen and allowed_file(imagen.filename):
+        if imagen and allowed_file(imagen.filename):
             try:
+                # Generar un nombre único para la imagen usando uuid4 y mantener la extensión original
+                ext = imagen.filename.rsplit('.', 1)[1].lower()
+                unique_filename = f"{uuid4().hex}.{ext}"
                 comprimida = compress_image(imagen)
-                comprimida.filename = 'comprimida.jpg'
+                comprimida.filename = unique_filename
                 public_url = upload_file_to_gcs(comprimida, force_jpeg=True)
                 update['imagen'] = public_url
+                # Eliminar la imagen anterior si existe
                 if imagen_anterior:
                     from urllib.parse import urlparse
                     parsed = urlparse(imagen_anterior)
@@ -132,8 +136,14 @@ def editar_producto(id):
             except Exception as e:
                 flash(f'Error al procesar la imagen: {str(e)}')
                 return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+        elif eliminar_imagen and imagen_anterior:
+            from urllib.parse import urlparse
+            parsed = urlparse(imagen_anterior)
+            filename = os.path.basename(parsed.path)
+            delete_file_from_gcs(filename)
+            update['imagen'] = None
         else:
-            update['imagen'] = None if eliminar_imagen else producto.get('imagen')
+            update['imagen'] = producto.get('imagen')
         if validate_product(update):
             collection.update_one({'_id': ObjectId(id)}, {'$set': update})
             flash('Producto actualizado.')
@@ -210,7 +220,6 @@ def api_productos():
 
 @app.route('/actualizar_precios', methods=['POST'])
 def actualizar_precios():
-    from flask import flash, jsonify, url_for
     data = request.get_json()
     tasa = data.get('tasa')
     resp = requests.get("https://ve.dolarapi.com/v1/dolares", timeout=5)
