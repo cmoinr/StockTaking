@@ -25,11 +25,12 @@
       <h2>Actualizar precios de productos</h2>
       <form id="form-actualizar-precios" style="margin-bottom:0; display: flex; flex-direction: column; align-items: center;">
           <label style="margin-bottom: 8px;">Selecciona la tasa a aplicar:</label>
-          <div style="margin: 10px 0 18px 0; display: flex; justify-content: center; gap: 18px;">
-              <label><input type="radio" name="tasa" value="oficial" checked> Oficial</label>
-              <label><input type="radio" name="tasa" value="paralelo"> Paralelo</label>
-              <label><input type="radio" name="tasa" value="promedio"> Promedio</label>
+          <div class="tasa-selector-horizontales" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
+              <button type="button" class="filtro-btn active" data-tasa="oficial">Oficial</button>
+              <button type="button" class="filtro-btn" data-tasa="paralelo">Paralelo</button>
+              <button type="button" class="filtro-btn" data-tasa="promedio">Promedio</button>
           </div>
+          <input type="hidden" name="tasa" id="tasa-hidden" value="oficial">
           <button type="button" class="button" style="margin-top: 8px;" onclick="vistaPreviaActualizacion()">Vista previa y actualizar</button>
       </form>
       <div id="preview-modal" class="modal" style="display:none;">
@@ -58,6 +59,20 @@
 }
 .update-prices-card h2 {
   margin-bottom: 18px;
+}
+.tasa-selector-horizontales .filtro-btn {
+  background: #e0f7fa;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tasa-selector-horizontales .filtro-btn.active {
+  background: #1ec6b6;
+  color: #fff;
 }
 .update-prices-card form label {
   margin-bottom: 8px;
@@ -94,8 +109,19 @@ fetch("{{ url_for('tasa_cambio') }}")
     document.getElementById('tasa-loading').textContent = 'Error al cargar la tasa de cambio.';
   });
 
+// Selector horizontal de tasa
+const tasaBtns = document.querySelectorAll('.tasa-selector-horizontales .filtro-btn');
+const tasaHidden = document.getElementById('tasa-hidden');
+tasaBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    tasaBtns.forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    tasaHidden.value = this.getAttribute('data-tasa');
+  });
+});
+
 function vistaPreviaActualizacion() {
-    const tasaSel = document.querySelector('input[name="tasa"]:checked').value;
+    const tasaSel = document.getElementById('tasa-hidden').value;
     let tasaValor = 0;
     if (tasaSel === 'oficial') tasaValor = tasas.oficial.promedio;
     else if (tasaSel === 'paralelo') tasaValor = tasas.paralelo.promedio;
@@ -118,7 +144,7 @@ function cerrarModal() {
     document.getElementById('preview-modal').style.display = 'none';
 }
 function confirmarActualizacion() {
-    const tasaSel = document.querySelector('input[name="tasa"]:checked').value;
+    const tasaSel = document.getElementById('tasa-hidden').value;
     fetch('/actualizar_precios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
