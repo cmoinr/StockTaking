@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
-{% block content %}
+{% block no_auth %}
 <style>
 .login-form-container {
     max-width: 350px;
-    margin: 60px auto 0 auto;
+    margin: 120px auto 0 auto;
     background: var(--form-bg, #fff);
     border-radius: 18px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.10);
@@ -45,12 +45,12 @@
     transition: background 0.3s, color 0.3s;
 }
 .login-form-container button {
-    width: 100%;
+    width: 70%;
     margin-top: 1.2rem;
     padding: 0.8rem;
     border: none;
     border-radius: 8px;
-    background: #2b7cff;
+    background: #1ec6b6;
     color: #fff;
     font-size: 1.1rem;
     font-weight: 700;
@@ -59,21 +59,23 @@
     transition: background 0.2s;
 }
 .login-form-container button:hover {
-    background: #1a5dcc;
+    background: #19998c;
 }
 .login-form-container p {
+    color: var(--label-p, #23272f);
     margin-top: 1.2rem;
     text-align: center;
 }
 .login-form-container a {
-    color: #2b7cff;
+    color: #1ec6b6;
     text-decoration: none;
     font-weight: 600;
 }
 /* Modo oscuro */
 body.dark-mode .login-form-container {
     --form-bg: #23272f;
-    --label-color: #e0e0e0;
+    --label-color: #b3b3b3;
+    --label-p: #b3b3b3;
     --input-bg: #23272f;
     --input-color: #f3f3f3;
     background: var(--form-bg);
@@ -89,6 +91,7 @@ body.dark-mode .login-form-container input[type="password"] {
     border: 1px solid #444;
 }
 </style>
+
 <div class="login-form-container">
     <h2>Iniciar Sesión</h2>
     <form method="post">

@@ -8,7 +8,7 @@
 
 {% block content %}
     <h1>Categorías</h1>
-    <form action="{{ url_for('guardar_categorias') }}" method="post" id="form-categorias">
+    <form action="{{ url_for('categorias') }}" method="post" id="form-categorias">
         <table>
             <tr>
                 <th>Nombre</th>
@@ -33,33 +33,22 @@
                 </tr>
                 {% endfor %}
             {% endif %}
+            <!-- Fila para nueva categoría -->
+            <tr>
+                <td><input type="text" name="nombre_nueva" placeholder="Nueva categoría"></td>
+                <td><input type="text" name="descripcion_nueva" placeholder="Descripción"></td>
+                <td></td>
+            </tr>
         </table>
         <div style="text-align:center; margin: 24px 0 12px 0;">
-            <button type="submit" class="button">Guardar</button>
+            <button type="submit" class="button">Guardar cambios</button>
         </div>
     </form>
-    <div style="text-align:center; margin-top:24px;">
-        <button class="button" onclick="mostrarFormNuevaCategoria()">Añadir otra categoría</button>
-    </div>
-    <div id="form-nueva-categoria" style="display:none; margin: 0 auto; max-width:400px;">
-        <form action="{{ url_for('nueva_categoria') }}" method="post" style="margin-top:18px;">
-            <input type="text" name="nombre" placeholder="Nombre de la categoría" required style="margin-bottom:8px; width:100%;"><br>
-            <input type="text" name="descripcion" placeholder="Descripción" style="margin-bottom:8px; width:100%; font-size:0.95em;"><br>
-            <button type="submit" class="button">Añadir</button>
-            <button type="button" class="button" onclick="ocultarFormNuevaCategoria()">Cancelar</button>
-        </form>
-    </div>
 {% endblock %}
 
 
 {% block scripts %}
     <script>
-    function mostrarFormNuevaCategoria() {
-        document.getElementById('form-nueva-categoria').style.display = 'block';
-    }
-    function ocultarFormNuevaCategoria() {
-        document.getElementById('form-nueva-categoria').style.display = 'none';
-    }
     function eliminarCategoria(id) {
         if (confirm('¿Eliminar esta categoría?')) {
             document.getElementById('eliminar_' + id).value = '1';

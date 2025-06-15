@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app, session
 from models import get_product_collection
+from bson.objectid import ObjectId
 
 autocomplete_api = Blueprint('autocomplete_api', __name__)
 
@@ -8,7 +9,7 @@ def autocomplete_nombres():
     db = current_app.db
     q = request.args.get('q', '').strip()
     collection = get_product_collection(db)
-    filtro = {}
+    filtro = {'user_id': ObjectId(session['user_id'])}
     if q:
         filtro['nombre'] = {'$regex': q, '$options': 'i'}
     nombres = collection.find(filtro, {'nombre': 1, '_id': 0}).limit(10)
@@ -20,6 +21,7 @@ def autocomplete_caracteristicas():
     q = request.args.get('q', '').strip()
     collection = get_product_collection(db)
     pipeline = [
+        {"$match": {"user_id": ObjectId(session['user_id'])}},
         {"$project": {"caracteristicas": {"$objectToArray": "$caracteristicas"}}},
         {"$unwind": "$caracteristicas"},
     ]

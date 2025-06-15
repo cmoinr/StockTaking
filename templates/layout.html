@@ -27,7 +27,7 @@
                     </svg>
                 </a>
                 {% if show_categorias is not defined or show_categorias %}
-                <a href="{{ url_for('ver_categorias') }}" class="icon-btn" title="Categorías">
+                <a href="{{ url_for('categorias') }}" class="icon-btn" title="Categorías">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>                
                 </a>
                 {% endif %}
@@ -58,6 +58,7 @@
         </div>
     </nav>
 
+{% if session['user_email'] is defined %}
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -71,6 +72,22 @@
 
         {% block content %}{% endblock %}
     </div>
+{% else %}
+    <div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block no_auth %}{% endblock %}
+    </div>
+{% endif %}
+
     <script>
     // Modo oscuro toggle global
     const darkModeToggle = document.getElementById('darkModeToggle');

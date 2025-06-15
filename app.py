@@ -43,7 +43,7 @@ def index():
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
 @login_required
 def nuevo_producto():
-    categorias = list(get_category_collection(db).find())
+    categorias = list(get_category_collection(db).find({'user_id': ObjectId(session['user_id'])}))
     if request.method == 'POST':
         data = {
             'nombre': request.form['nombre'],
@@ -98,7 +98,7 @@ def editar_producto(id):
     from urllib.parse import urlparse
     collection = get_product_collection(db)
     producto = collection.find_one({'_id': ObjectId(id)})
-    categorias = list(get_category_collection(db).find())
+    categorias = list(get_category_collection(db).find({'user_id': ObjectId(session['user_id'])}))
     if not producto:
         flash('Producto no encontrado.')
         return redirect(url_for('index'))
@@ -178,52 +178,36 @@ def eliminar_producto(id):
     return redirect(url_for('index'))
 
 
-@app.route('/categorias', methods=['GET'])
+@app.route('/categorias', methods=['GET', 'POST'])
 @login_required
-def ver_categorias():
-    categorias = list(get_category_collection(db).find())
-    return render_template('categorias.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
-
-
-@app.route('/categorias/nueva', methods=['POST'])
-@login_required
-def nueva_categoria():
-    nombre = request.form['nombre']
-    descripcion = request.form.get('descripcion', '')
-    data = {'nombre': nombre, 'descripcion': descripcion}
-    if validate_category(data):
-        get_category_collection(db).insert_one(data)
-    return redirect(url_for('ver_categorias'))
-
-
-@app.route('/categorias/<id>/editar', methods=['POST'])
-@login_required
-def editar_categoria(id):
-    nombre = request.form['nombre']
-    descripcion = request.form.get('descripcion', '')
-    data = {'nombre': nombre, 'descripcion': descripcion}
-    if validate_category(data):
-        get_category_collection(db).update_one({'_id': ObjectId(id)}, {'$set': data})
-    return redirect(url_for('ver_categorias'))
-
-
-@app.route('/guardar_categorias', methods=['POST'])
-@login_required
-def guardar_categorias():
-    from bson.objectid import ObjectId
+def categorias():
     collection = get_category_collection(db)
-    # Recorrer todas las categorías existentes
-    for c in collection.find():
-        cid = str(c['_id'])
-        nombre = request.form.get(f'nombre_{cid}')
-        descripcion = request.form.get(f'descripcion_{cid}')
-        eliminar = request.form.get(f'eliminar_{cid}')
-        if eliminar == '1':
-            collection.delete_one({'_id': ObjectId(cid)})
-        else:
-            if nombre is not None:
-                collection.update_one({'_id': ObjectId(cid)}, {'$set': {'nombre': nombre, 'descripcion': descripcion}})
-    return redirect(url_for('ver_categorias'))
+    if request.method == 'POST':
+        categorias = collection.find({'user_id': ObjectId(session['user_id'])})
+        for c in categorias:
+            cid = str(c['_id'])
+            nombre = request.form.get(f'nombre_{cid}')
+            descripcion = request.form.get(f'descripcion_{cid}')
+            eliminar = request.form.get(f'eliminar_{cid}')
+            if eliminar == '1':
+                collection.delete_one({'_id': ObjectId(cid), 'user_id': ObjectId(session['user_id'])})
+            else:
+                if nombre is not None:
+                    collection.update_one(
+                        {'_id': ObjectId(cid), 'user_id': ObjectId(session['user_id'])},
+                        {'$set': {'nombre': nombre, 'descripcion': descripcion}}
+                    )
+        # Nueva categoría
+        nombre_nueva = request.form.get('nombre_nueva')
+        descripcion_nueva = request.form.get('descripcion_nueva')
+        if nombre_nueva:
+            data = {'nombre': nombre_nueva, 'descripcion': descripcion_nueva or '', 'user_id': ObjectId(session['user_id'])}
+            if validate_category(data):
+                collection.insert_one(data)
+        return redirect(url_for('categorias'))
+    # GET: mostrar categorías
+    categorias = list(collection.find({'user_id': ObjectId(session['user_id'])}))
+    return render_template('categorias.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/tasa_dolar', methods=['GET'])
@@ -235,7 +219,7 @@ def tasa_dolar():
 @app.route('/api/productos')
 @login_required
 def api_productos():
-    productos = list(get_product_collection(db).find())
+    productos = list(get_product_collection(db).find({'user_id': ObjectId(session['user_id'])}))
     # Solo enviar nombre y precio en la respuesta
     return jsonify([
         {
@@ -267,7 +251,7 @@ def actualizar_precios():
     else:
         tasa_valor = (float(oficial.get('promedio')) + float(paralelo.get('promedio'))) / 2
     collection = get_product_collection(db)
-    productos = collection.find()
+    productos = collection.find({'user_id': ObjectId(session['user_id'])})
     for p in productos:
         precio_usd = p.get('precio', {}).get('$', 0)
         try:
@@ -275,7 +259,7 @@ def actualizar_precios():
         except:
             precio_usd = 0
         nuevo_bs = round(precio_usd * tasa_valor, 2)
-        collection.update_one({'_id': p['_id']}, {'$set': {'precio.bs': nuevo_bs}})
+        collection.update_one({'_id': p['_id'], 'user_id': ObjectId(session['user_id'])}, {'$set': {'precio.bs': nuevo_bs}})
     flash('Precios actualizados correctamente.', 'success')
     return jsonify({'success': True, 'redirect': url_for('index')})
 
@@ -323,11 +307,13 @@ def buscar_producto():
                 filtro[key] = precio_valor
         except ValueError:
             pass
+    filtro['user_id'] = ObjectId(session['user_id'])
     products = list(collection.find(filtro))
     # Si es AJAX, devolver JSON
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         for p in products:
             p['_id'] = str(p['_id'])
+            p['user_id'] = str(p['user_id'])
         return jsonify(products)
     return render_template('buscar_producto.html', products=products, query=query, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
