@@ -24,12 +24,12 @@ db = mongo_client.get_database()
 
 # Categorías principales para tienda de fútbol
 categorias = [
-    {"nombre": "Calzado", "descripcion": "Botines, zapatillas de fútbol campo y futsal"},
-    {"nombre": "Balones", "descripcion": "Balones de fútbol y futsal"},
-    {"nombre": "Indumentaria", "descripcion": "Ropa deportiva: camisetas, shorts, medias"},
-    {"nombre": "Protecciones", "descripcion": "Canilleras, tobilleras, protectores"},
-    {"nombre": "Entrenamiento", "descripcion": "Conos, vallas, escaleras, mini arcos"},
-    {"nombre": "Accesorios", "descripcion": "Guantes, infladores, silbatos, cintas, bolsos"}
+    {"nombre": "Calzado", "descripcion": "Botines, zapatillas de fútbol campo y futsal", "user_id": ObjectId("684df1c9049b0ea71d0178ce")},
+    {"nombre": "Balones", "descripcion": "Balones de fútbol y futsal", "user_id": ObjectId("684df1c9049b0ea71d0178ce")},
+    {"nombre": "Indumentaria", "descripcion": "Ropa deportiva: camisetas, shorts, medias", "user_id": ObjectId("684df1c9049b0ea71d0178ce")},
+    {"nombre": "Protecciones", "descripcion": "Canilleras, tobilleras, protectores", "user_id": ObjectId("684df1c9049b0ea71d0178ce")},
+    {"nombre": "Entrenamiento", "descripcion": "Conos, vallas, escaleras, mini arcos", "user_id": ObjectId("684df1c9049b0ea71d0178ce")},
+    {"nombre": "Accesorios", "descripcion": "Guantes, infladores, silbatos, cintas, bolsos", "user_id": ObjectId("684df1c9049b0ea71d0178ce")}
 ]
 
 # Insertar categorías si no existen

@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    StockTaking | Home
+{% endblock %}
+
+{% block content %}
+<style>
+.section-selector .filtro-btn {
+  background: transparent;
+  border: 1.5px solid #0e5e5a;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: large;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition-duration: 0.5s;
+}
+.section-selector .filtro-btn.active {
+  background: #0e5e5a;
+  color: #fff;
+}
+.dark-mode .section-selector .filtro-btn {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+.dark-mode .section-selector .filtro-btn.active {
+  background: #ffffff;
+  color: #0e5e5a;
+}
+</style>
+
+<div class="section-selector" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
+    <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('index') }}'">Inventario</button>
+    <button type="button" class="filtro-btn active" onclick="window.location.href='{{ url_for('ventas.listar_ventas') }}'">Ventas</button>
+</div>
+
+<h1>Ventas</h1>
+
+<table>
+    <tr>
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Método de pago</th>
+        <th>Total ($)</th>
+        <th>Detalle</th>
+    </tr>
+    {% for v in ventas %}
+    <tr>
+        <td>{{ v.fecha.strftime('%d/%m/%Y %H:%M') if v.fecha else '' }}</td>
+        <td>{{ v.cliente.nombre if v.cliente and v.cliente.nombre else '-' }}</td>
+        <td>{{ v.metodo_pago if v.metodo_pago else '-' }}</td>
+        <td>{{ '%.2f' % v.total }}</td>
+        <td class="acciones">
+            <button type="button" onclick="mostrarDetalle('{{ v._id }}')">Ver</button>
+            <div id="detalle_{{ v._id }}" style="display:none; text-align:left; margin-top:8px;">
+                <ul style="padding-left:1.2em;">
+                {% for item in v['items'] %}
+                    <li>{{ item.nombre }} (x{{ item.cantidad }}) - ${{ '%.2f' % item.precio_unitario }} c/u</li>
+                {% endfor %}
+                </ul>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function mostrarDetalle(id) {
+    const div = document.getElementById('detalle_' + id);
+    if (div.style.display === 'none') {
+        div.style.display = 'block';
+    } else {
+        div.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

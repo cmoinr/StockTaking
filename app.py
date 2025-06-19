@@ -13,6 +13,7 @@ from PIL import UnidentifiedImageError
 from uuid import uuid4
 from autocomplete_api import autocomplete_api
 from auth import auth_bp
+from ventas import ventas_bp
 from login_required import login_required
 import requests
 import os
@@ -37,6 +38,7 @@ mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
 app.register_blueprint(autocomplete_api)
 app.register_blueprint(auth_bp)
+app.register_blueprint(ventas_bp)
 app.db = db
 
 
@@ -54,9 +56,15 @@ def index():
         'index.html',
         products=products,
         column_config=config,
+
+        show_tasa_cambio=True,
         show_categorias=True,
         show_nuevo_producto=True,
-        show_buscar_producto=True
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False  
     )
 
 
@@ -121,7 +129,20 @@ def nuevo_producto():
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('nuevo_producto.html', categorias=categorias, column_config=config, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template(
+        'nuevo_producto.html', 
+        categorias=categorias, 
+        column_config=config, 
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False
+    )
 
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
@@ -210,7 +231,21 @@ def editar_producto(id):
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('editar_producto.html', producto=producto, categorias=categorias, column_config=config, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template(
+        'editar_producto.html', 
+        producto=producto, 
+        categorias=categorias, 
+        column_config=config, 
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False
+    )
 
 
 @app.route('/producto/<id>/eliminar', methods=['POST'])
@@ -251,13 +286,36 @@ def categorias():
         return redirect(url_for('categorias'))
     # GET: mostrar categorías
     categorias = list(collection.find({'user_id': ObjectId(session['user_id'])}))
-    return render_template('categorias.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template(
+        'categorias.html', 
+        categorias=categorias,
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False
+    )
 
 
 @app.route('/tasa_dolar', methods=['GET'])
 @login_required
 def tasa_dolar():
-    return render_template('tasa_dolar.html', show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template(
+        'tasa_dolar.html',
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False
+    )
 
 
 @app.route('/api/productos')
@@ -359,7 +417,20 @@ def buscar_producto():
             p['_id'] = str(p['_id'])
             p['user_id'] = str(p['user_id'])
         return jsonify(products)
-    return render_template('buscar_producto.html', products=products, query=query, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template(
+        'buscar_producto.html', 
+        products=products, 
+        query=query,
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False    
+    )
 
 
 @app.route('/tasa_cambio', methods=['GET'])
@@ -402,7 +473,19 @@ def dashboard():
         flash('Usuario no encontrado.')
         return redirect(url_for('index'))
     # Pasar el documento completo del usuario al template
-    return render_template('dashboard.html', user=user_doc)
+    return render_template(
+        'dashboard.html',
+        user=user_doc,
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False
+    )
 
 
 @app.route('/configurar_columnas', methods=['GET', 'POST'])
@@ -429,4 +512,16 @@ def configurar_columnas():
             )
         flash('Configuración de columnas actualizada.')
         return redirect(url_for('configurar_columnas'))
-    return render_template('configurar_columnas.html', config=config)
+    return render_template(
+        'configurar_columnas.html', 
+        config=config,
+
+        show_tasa_cambio=True,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True,
+        show_dashboard=True,
+
+        show_tasa_ventas=False,
+        show_nueva_venta=False        
+    )

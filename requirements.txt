@@ -5,3 +5,4 @@ gunicorn
 requests
 google-cloud-storage
 Pillow
+pytz

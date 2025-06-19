@@ -8,9 +8,8 @@
 
 {% block content %}
     <div class="section-selector" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
-        <button type="button" href="url_for('index')" class="filtro-btn active" data-tasa="oficial">Inventario</button>
-        <button type="button" href="url_for('index')" class="filtro-btn" data-tasa="paralelo">Ventas</button>
-        <button type="button" href="url_for('index')" class="filtro-btn" data-tasa="promedio">Pedidos</button>
+        <button type="button" class="filtro-btn active" data-tasa="oficial" onclick="window.location.href='{{ url_for('index') }}'">Inventario</button>
+        <button type="button" class="filtro-btn" data-tasa="paralelo" onclick="window.location.href='{{ url_for('ventas.listar_ventas') }}'">Ventas</button>
     </div>
 
     <h1>Inventario</h1>
