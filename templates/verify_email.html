@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
-{% block no_auth %}
+{% block content %}
 <style>
-.register-form-container {
+.verify-form-container {
     max-width: 350px;
     margin: 120px auto 0 auto;
     background: var(--form-bg, #fff);
@@ -13,28 +13,26 @@
     align-items: center;
     transition: background 0.3s;
 }
-.register-form-container h2 {
+.verify-form-container h2 {
     margin-bottom: 1.5rem;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     text-align: center;
 }
-.register-form-container form {
+.verify-form-container form {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.register-form-container label {
+.verify-form-container label {
     align-self: flex-start;
     margin-bottom: 0.3rem;
     margin-top: 1rem;
     font-weight: 600;
     color: var(--label-color, #222);
 }
-.register-form-container input[type="text"],
-.register-form-container input[type="email"],
-.register-form-container input[type="password"] {
+.verify-form-container input[type="text"] {
     width: 100%;
     padding: 0.7rem 1rem;
     border: 1px solid #bbb;
@@ -44,8 +42,12 @@
     background: var(--input-bg, #f9f9f9);
     color: var(--input-color, #222);
     transition: background 0.3s, color 0.3s;
+    letter-spacing: 0.2em;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2em;
 }
-.register-form-container button {
+.verify-form-container button {
     width: 70%;
     margin-top: 1.2rem;
     padding: 0.8rem;
@@ -59,20 +61,15 @@
     box-shadow: 0 2px 8px rgba(43,124,255,0.08);
     transition: background 0.2s;
 }
-.register-form-container button:hover {
+.verify-form-container button:hover {
     background: #159e92;
 }
-.register-form-container p {
+.verify-form-container p {
     margin-top: 1.2rem;
     text-align: center;
 }
-.register-form-container a {
-    color: #1ec6b6;
-    text-decoration: none;
-    font-weight: 600;
-}
 /* Modo oscuro */
-body.dark-mode .register-form-container {
+body.dark-mode .verify-form-container {
     --form-bg: #23272f;
     --label-color: #e0e0e0;
     --input-bg: #23272f;
@@ -80,21 +77,16 @@ body.dark-mode .register-form-container {
     background: var(--form-bg);
     box-shadow: 0 4px 24px rgba(0,0,0,0.30);
 }
-body.dark-mode .register-form-container label {
+body.dark-mode .verify-form-container label {
     color: var(--label-color);
 }
-body.dark-mode .register-form-container input[type="text"],
-body.dark-mode .register-form-container input[type="email"],
-body.dark-mode .register-form-container input[type="password"] {
+body.dark-mode .verify-form-container input[type="text"] {
     background: var(--input-bg);
     color: var(--input-color);
     border: 1px solid #444;
 }
-body.dark-mode .register-form-container a {
-    color: #1ec6b6;
-}
 </style>
-<div class="register-form-container">
+<div class="verify-form-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flashes">
@@ -104,20 +96,13 @@ body.dark-mode .register-form-container a {
         </div>
         {% endif %}
     {% endwith %}
-    <h2>Registro de Usuario</h2>
+    <h2>Verifica tu cuenta</h2>
+    <p>Hemos enviado un código de verificación a <b>{{ email }}</b>.<br>Por favor, ingrésalo para activar tu cuenta.</p>
     <form method="post">
-        <label for="first_name">Nombre:</label>
-        <input type="text" name="first_name" required>
-        <label for="last_name">Apellido:</label>
-        <input type="text" name="last_name" required>
-        <label for="email">Correo electrónico:</label>
-        <input type="email" name="email" required>
-        <label for="phone">Teléfono:</label>
-        <input type="text" name="phone" required pattern="[0-9+\-() ]{7,20}" title="Ingrese un teléfono válido">
-        <label for="password">Contraseña:</label>
-        <input type="password" name="password" required>
-        <button type="submit">Registrarse</button>
+        <label for="code">Código de verificación:</label>
+        <input type="text" name="code" maxlength="6" pattern="[0-9]{6}" required autofocus>
+        <button type="submit">Verificar</button>
     </form>
-    <p>¿Ya tienes cuenta? <a href="{{ url_for('auth.login') }}">Inicia sesión</a></p>
+    <p>¿No recibiste el código? Revisa tu carpeta de spam o <a href="{{ url_for('auth.register') }}">registra otro correo</a>.</p>
 </div>
 {% endblock %}

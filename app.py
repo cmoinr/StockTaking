@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
+from flask_mail import Mail, Message
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product
@@ -23,6 +24,14 @@ app.config['MONGO_URI'] = os.environ.get('MONGO_URI', 'mongodb://localhost:27017
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # 4MB máximo
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+
+app.config['MAIL_SERVER'] = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+app.config['MAIL_PORT'] = int(os.environ.get('MAIL_PORT', 587))
+app.config['MAIL_USE_TLS'] = os.environ.get('MAIL_USE_TLS', 'True') == 'True'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_DEFAULT_SENDER', app.config['MAIL_USERNAME'])
+mail = Mail(app)
 
 mongo_client = MongoClient(app.config['MONGO_URI'], server_api=ServerApi('1'))
 db = mongo_client.get_database('stock_db')
@@ -392,8 +401,8 @@ def dashboard():
     if not user_doc:
         flash('Usuario no encontrado.')
         return redirect(url_for('index'))
-    user = User.from_document(user_doc)
-    return render_template('dashboard.html', user=user)
+    # Pasar el documento completo del usuario al template
+    return render_template('dashboard.html', user=user_doc)
 
 
 @app.route('/configurar_columnas', methods=['GET', 'POST'])
