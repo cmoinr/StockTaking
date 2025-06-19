@@ -17,13 +17,17 @@
 
     <table>
         <tr>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Características</th>
-            <th>Stock</th>
-            <th>Precio</th>
-            <th>Imagen</th>
-            <th></th>
+            {% for col in column_config.column_order %}
+                <th>{{ col|capitalize }}</th>
+            {% endfor %}
+            {% for c in column_config.custom_columns %}
+                <th>{{ c.name|capitalize }}</th>
+            {% endfor %}
+            <th>
+                <a href="{{ url_for('configurar_columnas') }}" class="button" id="column_edit_btn" title="Editar">
+                    Personalizar
+                </a>                
+            </th>
         </tr>
         {% if products|length == 0 %}
             <tr>
@@ -32,30 +36,35 @@
         {% else %}
             {% for p in products %}
                 <tr>
-                    <td>{{ p['nombre'] }}</td>
-                    <td>{{ p['categoria'] }}</td>
-                    <td>
-                        {% for k, v in p['caracteristicas'].items() %}
-                            <strong>{{ k }}:</strong> {{ v }}<br>
-                        {% endfor %}
-                    </td>
-                    <td>{{ p['stock'] }}</td>
-                    <td>
-                        {% if 'precio' in p and p['precio'] %}
-                            <strong>$:</strong> {{ '%.2f' % p['precio']['$'] if '$' in p['precio'] and p['precio']['$'] is not none else '-' }}<br>
-                            <strong>Bs.:</strong> {{ '%.2f' % p['precio']['bs'] if 'bs' in p['precio'] and p['precio']['bs'] is not none else '-' }}
-                        {% else %}
-                            <strong>$:</strong> -<br>
-                            <strong>Bs.:</strong> -
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if p['imagen'] %}
-                            <img src="{{ p['imagen'] }}" alt="Imagen producto" style="max-width:60px; max-height:60px; border-radius:6px; cursor:pointer; border:1px solid #ccc;" onclick="mostrarImagenGrandeTabla(this)">
-                        {% else %}
-                            <span style="color:#aaa;font-size:0.9em;">Sin imagen</span>
-                        {% endif %}
-                    </td>
+                    {% for col in column_config.column_order %}
+                        <td>
+                            {# Renderiza según el tipo de columna, ejemplo: #}
+                            {% if col == 'caracteristicas' %}
+                                {% for k, v in p['caracteristicas'].items() %}
+                                    <strong>{{ k }}:</strong> {{ v }}<br>
+                                {% endfor %}
+                            {% elif col == 'precio' %}
+                                {% if 'precio' in p and p['precio'] %}
+                                    <strong>$:</strong> {{ '%.2f' % p['precio']['$'] if '$' in p['precio'] and p['precio']['$'] is not none else '-' }}<br>
+                                    <strong>Bs.:</strong> {{ '%.2f' % p['precio']['bs'] if 'bs' in p['precio'] and p['precio']['bs'] is not none else '-' }}
+                                {% else %}
+                                    <strong>$:</strong> -<br>
+                                    <strong>Bs.:</strong> -
+                                {% endif %} 
+                            {% elif col == 'imagen' %}
+                                {% if p['imagen'] %}
+                                    <img src="{{ p['imagen'] }}" alt="Imagen producto" style="max-width:60px; max-height:60px; border-radius:6px; cursor:pointer; border:1px solid #ccc;" onclick="mostrarImagenGrandeTabla(this)">
+                                {% else %}
+                                    <span style="color:#aaa;font-size:0.9em;">Sin imagen</span>
+                                {% endif %}                                                      
+                            {% else %}
+                                {{ p[col] if col in p else '' }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    {% for c in column_config.custom_columns %}
+                        <td>{{ p[c.name] if c.name in p else '' }}</td>
+                    {% endfor %}                    
                     <td class="acciones">
                         <a href="{{ url_for('editar_producto', id=p['_id']) }}" class="button" style="padding:5px 12px;font-size:0.95em;" title="Editar">
                             <!-- Icono lápiz (editar) -->
@@ -110,6 +119,17 @@
 .update-prices-card form button {
   margin-top: 8px;
 }
+#column_edit_btn {
+    background: transparent;
+    border: 1.5px solid #1ec6b6;
+    border-radius: 20px;
+    color: #1ec6b6;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size:0.85em;
+    vertical-align: middle;
+}
+
 </style>
 {% endblock %}
 

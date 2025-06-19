@@ -2,24 +2,25 @@
 from pymongo import MongoClient
 from models import get_category_collection, get_product_collection, validate_category, validate_product
 import requests
+from bson.objectid import ObjectId
 
 MONGO_URI = 'mongodb://localhost:27017/stock_db'
 
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client.get_database()
 
-# Función para obtener la tasa de cambio actual desde el endpoint /tasa_cambio de app.py
-def obtener_tasa_cambio():
-    try:
-        resp = requests.get('http://127.0.0.1:5000/tasa_cambio', timeout=5)
-        data = resp.json()
-        return float(data.oficial.promedio)
-    except Exception as e:
-        print(f"No se pudo obtener la tasa de cambio automáticamente: {e}")
-        return 40.0  # Valor por defecto si falla
+# # Función para obtener la tasa de cambio actual desde el endpoint /tasa_cambio de app.py
+# def obtener_tasa_cambio():
+#     try:
+#         resp = requests.get('http://127.0.0.1:5000/tasa_cambio', timeout=5)
+#         data = resp.json()
+#         return float(data.oficial.promedio)
+#     except Exception as e:
+#         print(f"No se pudo obtener la tasa de cambio automáticamente: {e}")
+#         return 40.0  # Valor por defecto si falla
 
-# Obtener tasa de cambio actual
-TASA_CAMBIO = obtener_tasa_cambio()
+# # Obtener tasa de cambio actual
+# TASA_CAMBIO = obtener_tasa_cambio()
 
 # Categorías principales para tienda de fútbol
 categorias = [
@@ -41,9 +42,6 @@ for cat in categorias:
 # Productos de ejemplo
 productos = [
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946ace8"
-    },
     "nombre": "Botines Adidas Predator",
     "caracteristicas": {
         "color": "Negro/Rojo",
@@ -62,9 +60,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946ace9"
-    },
     "nombre": "Botines Nike Mercurial AIR",
     "caracteristicas": {
         "color": "Azul",
@@ -82,9 +77,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946acea"
-    },
     "nombre": "Zapatillas Futsal Joma Top Flex",
     "caracteristicas": {
         "color": "Blanco/Azul",
@@ -103,9 +95,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946aceb"
-    },
     "nombre": "Zapatillas Futsal Adidas Sala",
     "caracteristicas": {
         "color": "Negro",
@@ -125,9 +114,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946acec"
-    },
     "nombre": "Balón Nike Futsal Pro",
     "caracteristicas": {
         "tamaño": "4",
@@ -146,9 +132,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946aced"
-    },
     "nombre": "Balón Adidas Tango",
     "caracteristicas": {
         "tamaño": "5",
@@ -166,9 +149,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946acee"
-    },
     "nombre": "Balón Penalty Campo",
     "caracteristicas": {
         "tamaño": "5",
@@ -187,9 +167,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946acef"
-    },
     "nombre": "Camiseta Oficial Argentina 2022",
     "caracteristicas": {
         "talla": "M",
@@ -208,9 +185,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d7babcc6bdce6d946acf0"
-    },
     "nombre": "Camiseta Oficial Brasil 2022",
     "caracteristicas": {
         "talla": "S-XL",
@@ -230,9 +204,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684d8ffd6551fb69bd8d2aa0"
-    },
     "nombre": "canilleras fut",
     "caracteristicas": {
         "color": "azul",
@@ -250,9 +221,6 @@ productos = [
     }
     },
     {
-    "_id": {
-        "$oid": "684e01c86ed1f852fc5b03ae"
-    },
     "nombre": "cinta capitan",
     "caracteristicas": {
         "color": "rojo",
@@ -271,6 +239,11 @@ productos = [
     }
 ]
 
+# Convertir user_id de cada producto a ObjectId si es necesario
+for prod in productos:
+    if isinstance(prod.get('user_id'), dict) and '$oid' in prod['user_id']:
+        prod['user_id'] = ObjectId(prod['user_id']['$oid'])
+
 prod_col = get_product_collection(db)
 for prod in productos:
     if not prod_col.find_one({"nombre": prod["nombre"]}):
@@ -278,22 +251,3 @@ for prod in productos:
             prod_col.insert_one(prod)
 
 print("Categorías y productos insertados correctamente.")
-
-# USERs CREADO
-# {
-#   "_id": {
-#     "$oid": "684df1c9049b0ea71d0178ce"
-#   },
-#   "username": "cmoinr",
-#   "email": "cmoinr@hotmail.com",
-#   "password_hash": "scrypt:32768:8:1$FR0tmHeViFtn2Tjc$947786857fb10dcb33f7f0d3d38f0bb2005a52a3ed4e84d2e7e6444d8436cceefbd760c0f38c65e62c0596a49ac7c562ac97d281770022c2cd4a89ab48ffeeaa"
-# }
-
-# {
-#   "_id": {
-#     "$oid": "684e017a6ed1f852fc5b03ad"
-#   },
-#   "username": "aneki",
-#   "email": "aneki@gmail.com",
-#   "password_hash": "scrypt:32768:8:1$afArewrKmxK9CRXu$b7d2030b3d8ca72ec1b9329d57a45e4d8b4ca7fafa62449bd4c61eb71426ebb5a511fd40d5538aed7b51cc647253c1458fa827c29666f8e40331c8b6119cd5ca"
-# }

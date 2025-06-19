@@ -93,6 +93,15 @@ body.dark-mode .login-form-container input[type="password"] {
 </style>
 
 <div class="login-form-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
     <h2>Iniciar Sesión</h2>
     <form method="post">
         <label for="email">Correo electrónico:</label>

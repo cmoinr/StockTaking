@@ -41,8 +41,14 @@
       </form>
       <div id="preview-modal" class="modal" style="display:none;">
           <div class="modal-content">
-              <span class="close" onclick="cerrarModal()">&times;</span>
-              <h3>Vista previa de actualización de precios</h3>
+              <button class="close-modal-btn" onclick="cerrarModal()" title="Cerrar vista previa">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span style="margin-left:6px;">Cerrar</span>
+              </button>
+              <div>
+                <h3>Vista previa de actualización de precios</h3>
+              </div>
+              
               <div id="preview-table-container" style="max-height:300px;overflow:auto;"></div>
               <button class="button" onclick="confirmarActualizacion()">Confirmar actualización</button>
           </div>
@@ -56,12 +62,36 @@
   align-items: center;
   margin-top: 40px;
   padding: 20px 0 0 0;
+  width: 100%;
+  box-sizing: border-box;
 }
-.exchange-rate-card, .update-prices-card {
+.exchange-rate-card {
   width: 100%;
   max-width: 420px;
   margin: 0 auto 28px auto;
   text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.08); /* Sombra suave tipo drag */
+  border-radius: 10px;
+  background: #fff;
+  border: 1.5px solid #1ec6b6;
+}
+.update-prices-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+  box-sizing: border-box;
+  background: #fff;
+}
+body.dark-mode .exchange-rate-card {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+}
+body.dark-mode .update-prices-card {
+  background: #23272b;
+  color: #e0e0e0;
 }
 .update-prices-card h2 {
   margin-bottom: 18px;
@@ -85,6 +115,44 @@
 }
 .update-prices-card form button {
   margin-top: 8px;
+}
+.modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 18px 18px 18px;
+  max-width: 420px;
+  margin: 40px auto;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.08);
+  border: 1.5px solid #1ec6b6;
+  text-align: center;
+}
+body.dark-mode .modal-content {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+}
+.close-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #b71c1c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 0.75em;
+  font-weight: 600;
+  cursor: pointer;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  transition: background 0.18s, color 0.18s;
+  z-index: 10;
+}
+.close-modal-btn:hover {
+  background: #0e5e5a;
+  color: #fff;
 }
 </style>
 {% endblock %}

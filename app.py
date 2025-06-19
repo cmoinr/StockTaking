@@ -4,9 +4,8 @@ from pymongo.server_api import ServerApi
 from models import get_product_collection, validate_product
 from models.category import get_category_collection, validate_category
 from models.user import User
+from models.table_config import get_table_config_for_user, update_table_config_for_user
 from bson.objectid import ObjectId
-import os
-import requests
 from gcs_utils import upload_file_to_gcs, delete_file_from_gcs
 from compress_utils import compress_image
 from PIL import UnidentifiedImageError
@@ -14,7 +13,8 @@ from uuid import uuid4
 from autocomplete_api import autocomplete_api
 from auth import auth_bp
 from login_required import login_required
-
+import requests
+import os
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Necesario para flash messages y sesiones
@@ -30,20 +30,32 @@ app.register_blueprint(autocomplete_api)
 app.register_blueprint(auth_bp)
 app.db = db
 
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @app.route('/')
 @login_required
 def index():
-    products = list(get_product_collection(db).find({'user_id': ObjectId(session['user_id'])}))
-    return render_template('index.html', products=products, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    user_id = session['user_id']
+    products = list(get_product_collection(db).find({'user_id': ObjectId(user_id)}))
+    config = get_table_config_for_user(db, user_id)
+    return render_template(
+        'index.html',
+        products=products,
+        column_config=config,
+        show_categorias=True,
+        show_nuevo_producto=True,
+        show_buscar_producto=True
+    )
 
 
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
 @login_required
 def nuevo_producto():
     categorias = list(get_category_collection(db).find({'user_id': ObjectId(session['user_id'])}))
+    config = get_table_config_for_user(db, session['user_id'])
     if request.method == 'POST':
         data = {
             'nombre': request.form['nombre'],
@@ -83,13 +95,24 @@ def nuevo_producto():
                 return render_template('nuevo_producto.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
         else:
             data['imagen'] = None
+
+        for col in config['custom_columns']:
+            field = f"custom_{col['name']}"
+            value = request.form.get(field)
+            if col['type'] == 'number' and value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    value = None
+            data[col['name']] = value
+
         if validate_product(data):
             get_product_collection(db).insert_one(data)
             flash('Producto agregado exitosamente.')
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('nuevo_producto.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template('nuevo_producto.html', categorias=categorias, column_config=config, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
@@ -99,6 +122,7 @@ def editar_producto(id):
     collection = get_product_collection(db)
     producto = collection.find_one({'_id': ObjectId(id)})
     categorias = list(get_category_collection(db).find({'user_id': ObjectId(session['user_id'])}))
+    config = get_table_config_for_user(db, session['user_id'])
     if not producto:
         flash('Producto no encontrado.')
         return redirect(url_for('index'))
@@ -160,13 +184,24 @@ def editar_producto(id):
                 print(f'Eliminacion forzada de la imagen: {str(e)}')            
         else:
             update['imagen'] = producto.get('imagen')
+
+        for col in config['custom_columns']:
+            field = f"custom_{col['name']}"
+            value = request.form.get(field)
+            if col['type'] == 'number' and value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    value = None
+            update[col['name']] = value
+
         if validate_product(update):
             collection.update_one({'_id': ObjectId(id)}, {'$set': update})
             flash('Producto actualizado.')
             return redirect(url_for('index'))
         else:
             flash('Datos inválidos.')
-    return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
+    return render_template('editar_producto.html', producto=producto, categorias=categorias, column_config=config, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
 
 
 @app.route('/producto/<id>/eliminar', methods=['POST'])
@@ -359,3 +394,30 @@ def dashboard():
         return redirect(url_for('index'))
     user = User.from_document(user_doc)
     return render_template('dashboard.html', user=user)
+
+
+@app.route('/configurar_columnas', methods=['GET', 'POST'])
+@login_required
+def configurar_columnas():
+    user_id = session['user_id']
+    config = get_table_config_for_user(db, user_id)
+    if request.method == 'POST':
+        # Recibe el nuevo orden y columnas personalizadas
+        column_order = request.form.getlist('column_order')
+        custom_names = request.form.getlist('custom_name')
+        custom_types = request.form.getlist('custom_type')
+        custom_columns = [
+            {"name": n, "type": t}
+            for n, t in zip(custom_names, custom_types) if n.strip()
+        ]
+        update_table_config_for_user(db, user_id, column_order, custom_columns)
+        # Agregar el campo a los productos existentes si es nuevo
+        prod_col = get_product_collection(db)
+        for col in custom_columns:
+            prod_col.update_many(
+                {"user_id": ObjectId(user_id), col["name"]: {"$exists": False}},
+                {"$set": {col["name"]: None}}
+            )
+        flash('Configuración de columnas actualizada.')
+        return redirect(url_for('configurar_columnas'))
+    return render_template('configurar_columnas.html', config=config)
