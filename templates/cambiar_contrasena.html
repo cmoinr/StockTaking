@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% block title %}Cambiar contraseña{% endblock %}
+{% block content %}
+<h2>Cambiar contraseña</h2>
+<form method="post">
+    <label>Contraseña actual:<br><input type="password" name="actual" required></label><br><br>
+    <label>Nueva contraseña:<br><input type="password" name="nueva" required></label><br><br>
+    <label>Confirmar nueva contraseña:<br><input type="password" name="confirmar" required></label><br><br>
+    <button type="submit" class="button">Cambiar contraseña</button>
+</form>
+{% endblock %}

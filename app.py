@@ -47,24 +47,20 @@ def allowed_file(filename):
 
 
 @app.route('/')
-@login_required
 def index():
+    # vista publica
+    return render_template('index.html')
+
+
+@app.route('/inventario')
+@login_required
+def inventario():
     user_id = session['user_id']
     products = list(get_product_collection(db).find({'user_id': ObjectId(user_id)}))
     config = get_table_config_for_user(db, user_id)
-    return render_template(
-        'index.html',
+    return render_template('inventario.html',
         products=products,
-        column_config=config,
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False  
+        column_config=config
     )
 
 
@@ -126,23 +122,10 @@ def nuevo_producto():
         if validate_product(data):
             get_product_collection(db).insert_one(data)
             flash('Producto agregado exitosamente.')
-            return redirect(url_for('index'))
+            return redirect(url_for('inventario'))
         else:
             flash('Datos inválidos.')
-    return render_template(
-        'nuevo_producto.html', 
-        categorias=categorias, 
-        column_config=config, 
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False
-    )
+    return render_template('nuevo_producto.html', categorias=categorias, column_config=config)
 
 
 @app.route('/producto/<id>/editar', methods=['GET', 'POST'])
@@ -228,24 +211,10 @@ def editar_producto(id):
         if validate_product(update):
             collection.update_one({'_id': ObjectId(id)}, {'$set': update})
             flash('Producto actualizado.')
-            return redirect(url_for('index'))
+            return redirect(url_for('inventario'))
         else:
             flash('Datos inválidos.')
-    return render_template(
-        'editar_producto.html', 
-        producto=producto, 
-        categorias=categorias, 
-        column_config=config, 
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False
-    )
+    return render_template('editar_producto.html', producto=producto, categorias=categorias, column_config=config)
 
 
 @app.route('/producto/<id>/eliminar', methods=['POST'])
@@ -254,7 +223,7 @@ def eliminar_producto(id):
     collection = get_product_collection(db)
     collection.delete_one({'_id': ObjectId(id)})
     flash('Producto eliminado.')
-    return redirect(url_for('index'))
+    return redirect(url_for('inventario'))
 
 
 @app.route('/categorias', methods=['GET', 'POST'])
@@ -286,36 +255,13 @@ def categorias():
         return redirect(url_for('categorias'))
     # GET: mostrar categorías
     categorias = list(collection.find({'user_id': ObjectId(session['user_id'])}))
-    return render_template(
-        'categorias.html', 
-        categorias=categorias,
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False
-    )
+    return render_template('categorias.html', categorias=categorias)
 
 
 @app.route('/tasa_dolar', methods=['GET'])
 @login_required
 def tasa_dolar():
-    return render_template(
-        'tasa_dolar.html',
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False
-    )
+    return render_template('tasa_dolar.html')
 
 
 @app.route('/api/productos')
@@ -363,7 +309,7 @@ def actualizar_precios():
         nuevo_bs = round(precio_usd * tasa_valor, 2)
         collection.update_one({'_id': p['_id'], 'user_id': ObjectId(session['user_id'])}, {'$set': {'precio.bs': nuevo_bs}})
     flash('Precios actualizados correctamente.', 'success')
-    return jsonify({'success': True, 'redirect': url_for('index')})
+    return jsonify({'success': True, 'redirect': url_for('inventario')})
 
 
 @app.route('/producto/buscar')
@@ -417,20 +363,7 @@ def buscar_producto():
             p['_id'] = str(p['_id'])
             p['user_id'] = str(p['user_id'])
         return jsonify(products)
-    return render_template(
-        'buscar_producto.html', 
-        products=products, 
-        query=query,
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False    
-    )
+    return render_template('buscar_producto.html', products=products, query=query)
 
 
 @app.route('/tasa_cambio', methods=['GET'])
@@ -471,21 +404,9 @@ def dashboard():
     user_doc = users_col.find_one({'email': session['user_email']})
     if not user_doc:
         flash('Usuario no encontrado.')
-        return redirect(url_for('index'))
+        return redirect(url_for('user_home'))
     # Pasar el documento completo del usuario al template
-    return render_template(
-        'dashboard.html',
-        user=user_doc,
-
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
-
-        show_tasa_ventas=False,
-        show_nueva_venta=False
-    )
+    return render_template('dashboard.html', user=user_doc)
 
 
 @app.route('/configurar_columnas', methods=['GET', 'POST'])
@@ -511,17 +432,53 @@ def configurar_columnas():
                 {"$set": {col["name"]: None}}
             )
         flash('Configuración de columnas actualizada.')
-        return redirect(url_for('configurar_columnas'))
-    return render_template(
-        'configurar_columnas.html', 
-        config=config,
+        return redirect(url_for('inventario'))
+    return render_template('configurar_columnas.html', config=config)
 
-        show_tasa_cambio=True,
-        show_categorias=True,
-        show_nuevo_producto=True,
-        show_buscar_producto=True,
-        show_dashboard=True,
 
-        show_tasa_ventas=False,
-        show_nueva_venta=False        
-    )
+@app.route('/home')
+@login_required
+def user_home():
+    # Puedes obtener el usuario actual desde la sesión o un decorador
+    user_id = session.get('user_id')
+    users_col = app.db['users']
+    user_doc = users_col.find_one({'_id': ObjectId(user_id)})
+    return render_template('user_home.html', current_user=user_doc)
+
+
+@app.route('/editar_info_usuario', methods=['GET', 'POST'])
+@login_required
+def editar_info_usuario():
+    user_id = session.get('user_id')
+    users_col = app.db['users']
+    user_doc = users_col.find_one({'_id': ObjectId(user_id)})
+    if request.method == 'POST':
+        email = request.form['email']
+        telefono = request.form.get('telefono', '')
+        users_col.update_one({'_id': ObjectId(user_id)}, {'$set': {'email': email, 'telefono': telefono}})
+        flash('Información actualizada.')
+        return redirect(url_for('user_home'))
+    return render_template('editar_info_usuario.html', current_user=user_doc)
+
+
+@app.route('/cambiar_contrasena', methods=['GET', 'POST'])
+@login_required
+def cambiar_contrasena():
+    user_id = session.get('user_id')
+    users_col = app.db['users']
+    user_doc = users_col.find_one({'_id': ObjectId(user_id)})
+    if request.method == 'POST':
+        actual = request.form['actual']
+        nueva = request.form['nueva']
+        confirmar = request.form['confirmar']
+        if nueva != confirmar:
+            flash('Las contraseñas no coinciden.')
+            return render_template('cambiar_contrasena.html')
+        # Aquí deberías validar la contraseña actual y actualizar la nueva (esto depende de tu modelo de usuario)
+        if not User.check_password(user_doc, actual):
+            flash('Contraseña actual incorrecta.')
+            return render_template('cambiar_contrasena.html')
+        users_col.update_one({'_id': ObjectId(user_id)}, {'$set': {'password': User.hash_password(nueva)}})
+        flash('Contraseña cambiada exitosamente.')
+        return redirect(url_for('user_home'))
+    return render_template('cambiar_contrasena.html')

@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+{% block title %}Editar información de contacto{% endblock %}
+{% block content %}
+<h2>Editar información de contacto</h2>
+<form method="post">
+    <label>Email:<br><input type="email" name="email" value="{{ current_user.email }}" required></label><br><br>
+    <label>Teléfono:<br><input type="text" name="telefono" value="{{ current_user.telefono or '' }}"></label><br><br>
+    <button type="submit" class="button">Guardar cambios</button>
+</form>
+{% endblock %}

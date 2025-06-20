@@ -1,10 +1,10 @@
-{% extends 'layout.html' %}
+{% extends 'ventas_layout.html' %}
 
 {% block title %}
-    StockTaking | Home
+    Ventas | StockTaking App
 {% endblock %}
 
-{% block content %}
+{% block main %}
 <style>
 .section-selector .filtro-btn {
   background: transparent;
@@ -32,7 +32,8 @@
 </style>
 
 <div class="section-selector" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
-    <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('index') }}'">Inventario</button>
+    <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('user_home') }}'">Home</button>
+    <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('inventario') }}'">Inventario</button>
     <button type="button" class="filtro-btn active" onclick="window.location.href='{{ url_for('ventas.listar_ventas') }}'">Ventas</button>
 </div>
 

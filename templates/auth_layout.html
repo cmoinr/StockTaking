@@ -20,6 +20,7 @@
                 <input type="checkbox" id="darkModeToggle">
                 <span class="slider"></span>
             </label>
+
             <a href="{{ url_for('auth.login') }}" class="icon-btn" title="Iniciar sesión">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
                 Iniciar sesión
@@ -28,10 +29,14 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
                 Registrarse
             </a>
+
+            {% block navbar_extra %}{% endblock %}
         </div>
     </nav>
 
-{% block main %}{% endblock %}
+
+{% block auth %}{% endblock %}
+
 
 <style>
 .flashes {

@@ -12,7 +12,7 @@
 <body>
     <nav class="navbar">
         <div class="navbar-title">
-            <a href="{{ url_for('index') }}" class="main-title">StockTaking</a>
+            <a href="{{ url_for('ventas.listar_ventas') }}" class="main-title">StockTaking</a>
             <span class="subtitle">app</span>
         </div>
         <div class="navbar-actions">
@@ -20,18 +20,35 @@
                 <input type="checkbox" id="darkModeToggle">
                 <span class="slider"></span>
             </label>
-            <a href="{{ url_for('auth.login') }}" class="icon-btn" title="Iniciar sesión">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                Iniciar sesión
-            </a>
-            <a href="{{ url_for('auth.register') }}" class="icon-btn" title="Registrarse">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
-                Registrarse
-            </a>
+            {% if session['user_email'] is defined %}
+                <a href="{{ url_for('ventas.tasa_dolar_ventas') }}" class="icon-btn" title="Tasa de Cambio">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14,11H10a2,2,0,0,1,0-4h5a1,1,0,0,1,1,1,1,1,0,0,0,2,0,3,3,0,0,0-3-3H13V3a1,1,0,0,0-2,0V5H10a4,4,0,0,0,0,8h4a2,2,0,0,1,0,4H9a1,1,0,0,1-1-1,1,1,0,0,0-2,0,3,3,0,0,0,3,3h2v2a1,1,0,0,0,2,0V19h1a4,4,0,0,0,0-8Z"></path>
+                    </svg>
+                </a>
+                <a href="{{ url_for('ventas.nueva_venta') }}" class="icon-btn" title="Nueva venta">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>                
+                </a>
+            {% endif %}
+            {% block navbar_extra %}{% endblock %}
         </div>
     </nav>
 
-{% block main %}{% endblock %}
+{% if session['user_email'] is defined %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block main %}{% endblock %}
+    </div>
+{% endif %}
 
 <style>
 .flashes {

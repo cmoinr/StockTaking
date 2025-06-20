@@ -1,6 +1,10 @@
-{% extends 'layout.html' %}
-{% block title %}Configurar columnas{% endblock %}
-{% block content %}
+{% extends 'inventario_layout.html' %}
+
+{% block title %}
+    Editar Columnas | StockTaking App
+{% endblock %}
+
+{% block main %}
 <h1 style="text-align:center;">Configurar columnas de la tabla</h1>
 <form method="post" style="display:flex; flex-direction:column; align-items:center;">
     <h3 style="text-align:center;">Orden de columnas</h3>
@@ -33,6 +37,7 @@
     <br><br>
     <button type="submit">Guardar configuración</button>
 </form>
+
 <style>
 #column-list {
     margin: 0 auto;

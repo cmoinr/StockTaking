@@ -1,5 +1,12 @@
-{% extends 'layout.html' %}
-{% block no_auth %}
+{% extends 'auth_layout.html' %}
+
+
+{% block title %}
+    Registro | StockTaking App
+{% endblock %}
+
+
+{% block auth %}
 <style>
 .register-form-container {
     max-width: 350px;

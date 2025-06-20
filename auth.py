@@ -106,7 +106,7 @@ def login():
                 session['user_email'] = user.email
                 session['user_id'] = str(user_doc['_id'])
                 flash('Inicio de sesión exitoso.')
-                return redirect(url_for('index'))
+                return redirect(url_for('user_home'))
         flash('Credenciales incorrectas.')
         return redirect(url_for('auth.login'))
     return render_template('login.html')

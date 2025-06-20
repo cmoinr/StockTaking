@@ -1,0 +1,52 @@
+{% extends 'home_layout.html' %}
+
+{% block title %}
+    Home | StockTaking App
+{% endblock %}
+
+{% block main %}
+    <div class="section-selector" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
+        <button type="button" class="filtro-btn active" onclick="window.location.href='{{ url_for('user_home') }}'">Home</button>
+        <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('inventario') }}'">Inventario</button>
+        <button type="button" class="filtro-btn" onclick="window.location.href='{{ url_for('ventas.listar_ventas') }}'">Ventas</button>
+    </div>
+
+<div class="user-dashboard" style="max-width:600px;margin:0 auto;">
+    <h1>Bienvenido, {{ current_user.nombre or current_user.username or 'Usuario' }}!</h1>
+    <p>Desde aquí puedes gestionar tu cuenta y acceder a funciones clave:</p>
+    <ul style="list-style:none;padding:0;">
+        <li><a href="{{ url_for('cambiar_contrasena') }}" class="button">Cambiar contraseña</a></li>
+        <li><a href="{{ url_for('editar_info_usuario') }}" class="button">Editar información de contacto</a></li>
+        <li><a href="{{ url_for('user_home') }}" class="button">Ver historial de actividad</a></li>
+        <li><a href="{{ url_for('user_home') }}" class="button">Configurar notificaciones</a></li>
+        <li><a href="{{ url_for('user_home') }}" class="button" style="color:#c00;">Eliminar cuenta</a></li>
+    </ul>
+    <hr>
+    <p style="color:#888;font-size:0.95em;">¿Necesitas ayuda? <a href="mailto:soporte@stocktaking.com">Contacta soporte</a></p>
+</div>
+<style>
+.section-selector .filtro-btn {
+  background: transparent;
+  border: 1.5px solid #0e5e5a;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: large;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition-duration: 0.5s;
+}
+.section-selector .filtro-btn.active {
+  background: #0e5e5a;
+  color: #fff;
+}
+.dark-mode .section-selector .filtro-btn {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+.dark-mode .section-selector .filtro-btn.active {
+  background: #ffffff;
+  color: #0e5e5a;
+}
+</style>
+{% endblock %}

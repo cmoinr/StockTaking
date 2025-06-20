@@ -1,5 +1,12 @@
-{% extends 'layout.html' %}
-{% block no_auth %}
+{% extends 'auth_layout.html' %}
+
+
+{% block title %}
+    Iniciar Sesión | StockTaking App
+{% endblock %}
+
+
+{% block auth %}
 <style>
 .login-form-container {
     max-width: 350px;

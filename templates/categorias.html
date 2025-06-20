@@ -1,12 +1,12 @@
-{% extends 'layout.html' %}
+{% extends 'inventario_layout.html' %}
 
 
 {% block title %}
-    StockTaking | Categorías
+    Categorías | StockTaking App
 {% endblock %}
 
 
-{% block content %}
+{% block main %}
     <h1>Categorías</h1>
     <form action="{{ url_for('categorias') }}" method="post" id="form-categorias">
         <table>
