@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Soccer: stocktaking{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-title">
+            {% if show_nueva_venta and show_tasa_ventas %}
+                <a href="{{ url_for('ventas.listar_ventas') }}" class="main-title">StockTaking</a>
+            {% else %}
+                <a href="{{ url_for('index') }}" class="main-title">StockTaking</a>
+            {% endif %}
+            <span class="subtitle">app</span>
+        </div>
+        <div class="navbar-actions">
+            <label class="switch-darkmode" title="Modo oscuro">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+            {% if session['user_email'] is defined %}
+                {% if show_tasa_cambio %}
+                    <a href="{{ url_for('tasa_dolar') }}" class="icon-btn" title="Tasa de Cambio">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14,11H10a2,2,0,0,1,0-4h5a1,1,0,0,1,1,1,1,1,0,0,0,2,0,3,3,0,0,0-3-3H13V3a1,1,0,0,0-2,0V5H10a4,4,0,0,0,0,8h4a2,2,0,0,1,0,4H9a1,1,0,0,1-1-1,1,1,0,0,0-2,0,3,3,0,0,0,3,3h2v2a1,1,0,0,0,2,0V19h1a4,4,0,0,0,0-8Z"></path>
+                        </svg>
+                    </a>
+                {% endif %}
+                {% if show_categorias %}
+                    <a href="{{ url_for('categorias') }}" class="icon-btn" title="Categorías">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>                
+                    </a>
+                {% endif %}
+                {% if show_nuevo_producto %}
+                    <a href="{{ url_for('nuevo_producto') }}" class="icon-btn" title="Agregar producto">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>                
+                    </a>
+                {% endif %}
+                {% if show_buscar_producto %}
+                    <a href="{{ url_for('buscar_producto') }}" class="icon-btn" title="Buscar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>                
+                    </a>
+                {% endif %}
+                {% if show_dashboard %}
+                    <a href="{{ url_for('dashboard') }}" class="icon-btn" title="Mi Panel">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                    </a>
+                {% endif %}
+
+                {% if show_tasa_ventas %}
+                    <a href="{{ url_for('ventas.tasa_dolar_ventas') }}" class="icon-btn" title="Tasa de Cambio">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14,11H10a2,2,0,0,1,0-4h5a1,1,0,0,1,1,1,1,1,0,0,0,2,0,3,3,0,0,0-3-3H13V3a1,1,0,0,0-2,0V5H10a4,4,0,0,0,0,8h4a2,2,0,0,1,0,4H9a1,1,0,0,1-1-1,1,1,0,0,0-2,0,3,3,0,0,0,3,3h2v2a1,1,0,0,0,2,0V19h1a4,4,0,0,0,0-8Z"></path>
+                        </svg>
+                    </a>
+                {% endif %}
+                {% if show_nueva_venta %}
+                    <a href="{{ url_for('ventas.nueva_venta') }}" class="icon-btn" title="Nueva venta">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>                
+                    </a>
+                {% endif %}
+           
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="icon-btn" title="Iniciar sesión">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Iniciar sesión
+                </a>
+                <a href="{{ url_for('auth.register') }}" class="icon-btn" title="Registrarse">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a7.5 7.5 0 0 1 13 0"/></svg>
+                    Registrarse
+                </a>
+            {% endif %}
+            {% block navbar_extra %}{% endblock %}
+        </div>
+    </nav>
+
+{% if session['user_email'] is defined %}
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flashes">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+{% else %}
+
+    {% block no_auth %}{% endblock %}
+    
+{% endif %}
+<style>
+.flashes {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.alert {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 1em;
+    font-family: inherit;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.07);
+    border: 1.5px solid #1ec6b6;
+    background: #e6fcfa;
+    color: #0e5e5a;
+    text-align: center;
+    /* Animación de fade-out */
+    opacity: 1;
+    transition: opacity 0.7s ease;
+    max-width: 90vw;
+    min-width: 120px;
+}
+.alert-success {
+    background: #e6fcf0;
+    color: #1a7f4e;
+    border-color: #1ec6b6;
+}
+.alert-error, .alert-danger {
+    background: #ffeaea;
+    color: #b71c1c;
+    border-color: #e57373;
+}
+body.dark-mode .alert {
+    background: #23272b;
+    color: #1ec6b6;
+    border-color: #1ec6b6;
+}
+body.dark-mode .alert-success {
+    background: #1a2e24;
+    color: #1ec6b6;
+}
+body.dark-mode .alert-error, body.dark-mode .alert-danger {
+    background: #2e1a1a;
+    color: #ffb3b3;
+    border-color: #e57373;
+}
+</style>
+
+    <script>
+    // Modo oscuro toggle global
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (localStorage.getItem('darkMode') === 'enabled' || (!localStorage.getItem('darkMode') && prefersDark)) {
+        document.body.classList.add('dark-mode');
+        if(darkModeToggle) darkModeToggle.checked = true;
+    }
+    if(darkModeToggle) {
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+    }
+
+    // Animación de desaparición de alertas flash
+    window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 700); // coincide con el transition
+            });
+        }, 5000);
+    });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

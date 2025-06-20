@@ -1,0 +1,159 @@
+{% extends 'layout.html' %}
+{% block content %}
+<style>
+.nueva-venta-container {
+    max-width: 480px;
+    margin: 60px auto 0 auto;
+    background: var(--form-bg, #fff);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(30,198,182,0.10);
+    padding: 2.5rem 2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.3s;
+}
+.nueva-venta-container h2 {
+    margin-bottom: 1.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-align: center;
+}
+.nueva-venta-container form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.nueva-venta-container label {
+    align-self: flex-start;
+    margin-bottom: 0.3rem;
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--label-color, #222);
+}
+.nueva-venta-container input[type="text"],
+.nueva-venta-container input[type="number"],
+.nueva-venta-container input[type="email"] {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    margin-bottom: 0.7rem;
+    font-size: 1rem;
+    background: var(--input-bg, #f9f9f9);
+    color: var(--input-color, #222);
+    transition: background 0.3s, color 0.3s;
+}
+.nueva-venta-container button {
+    width: 70%;
+    margin-top: 1.2rem;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    background: #1ec6b6;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(30,198,182,0.08);
+    transition: background 0.2s;
+}
+.nueva-venta-container button:hover {
+    background: #159e92;
+}
+.nueva-venta-container table {
+    width: 100%;
+    margin-bottom: 1.2rem;
+    border-collapse: collapse;
+}
+.nueva-venta-container th, .nueva-venta-container td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+.nueva-venta-container th {
+    background: #e6fcfa;
+    color: #0e5e5a;
+}
+.nueva-venta-container .acciones {
+    display: flex;
+    gap: 0.5em;
+    justify-content: center;
+}
+body.dark-mode .nueva-venta-container {
+    --form-bg: #23272f;
+    --label-color: #e0e0e0;
+    --input-bg: #23272f;
+    --input-color: #f3f3f3;
+    background: var(--form-bg);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.30);
+}
+body.dark-mode .nueva-venta-container label {
+    color: var(--label-color);
+}
+body.dark-mode .nueva-venta-container input[type="text"],
+body.dark-mode .nueva-venta-container input[type="number"],
+body.dark-mode .nueva-venta-container input[type="email"] {
+    background: var(--input-bg);
+    color: var(--input-color);
+    border: 1px solid #444;
+}
+</style>
+<div class="nueva-venta-container">
+    <h2>Registrar Nueva Venta</h2>
+    <form method="post">
+        <table>
+            <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Precio ($)</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+            {% for p in productos %}
+            <tr>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.stock }}</td>
+                <td>{{ '%.2f' % p['precio']['$'] if 'precio' in p and '$' in p['precio'] else '-' }}</td>
+                <td><input type="number" name="cantidad_{{ p._id }}" min="0" max="{{ p.stock }}" value="0" style="width:60px;"></td>
+                <td id="subtotal_{{ p._id }}">0.00</td>
+                <td><input type="checkbox" name="agregar_{{ p._id }}"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <label for="cliente_nombre">Cliente (opcional):</label>
+        <input type="text" name="cliente_nombre" placeholder="Nombre">
+        <input type="text" name="cliente_telefono" placeholder="Teléfono">
+        <input type="email" name="cliente_email" placeholder="Correo electrónico">
+        <label for="metodo_pago">Método de pago:</label>
+        <input type="text" name="metodo_pago" placeholder="Efectivo, Transferencia, etc.">
+        <div style="margin:1em 0; font-weight:600;">Total: $<span id="total_venta">0.00</span></div>
+        <input type="hidden" name="total" id="total_hidden" value="0.00">
+        <button type="submit">Registrar venta</button>
+    </form>
+    <a href="{{ url_for('ventas.listar_ventas') }}" style="margin-top:1.2rem; color:#2b7cff; text-decoration:underline;">Ver ventas</a>
+</div>
+<script>
+// JS para calcular subtotales y total en tiempo real
+const items = {{ productos|tojson|safe }};
+function actualizarTotales() {
+    let total = 0;
+    items.forEach(p => {
+        const cantidad = parseInt(document.querySelector(`[name='cantidad_${p._id}']`).value) || 0;
+        const precio = p.precio && p.precio['$'] ? parseFloat(p.precio['$']) : 0;
+        const subtotal = cantidad * precio;
+        document.getElementById(`subtotal_${p._id}`).innerText = subtotal.toFixed(2);
+        if (document.querySelector(`[name='agregar_${p._id}']`).checked) {
+            total += subtotal;
+        }
+    });
+    document.getElementById('total_venta').innerText = total.toFixed(2);
+    document.getElementById('total_hidden').value = total.toFixed(2);
+}
+document.querySelectorAll('input[type=number], input[type=checkbox]').forEach(el => {
+    el.addEventListener('input', actualizarTotales);
+});
+</script>
+{% endblock %}

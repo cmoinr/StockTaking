@@ -1,0 +1,237 @@
+{% extends 'layout.html' %}
+
+
+{% block title %}
+    StockTaking | Tasa de Cambio
+{% endblock %}
+
+
+{% block content %}
+<div class="tasa-dolar-container">
+  <h1>Tasa de Cambio</h1>
+  <div class="exchange-rate-card">
+      <div id="tasa-loading" style="text-align:center; color:#888;">Cargando tasas...</div>
+      <div id="tasa-content" style="display:none;">
+          <div class="tasa-row">
+              <span class="tasa-label">Oficial:</span>
+              <span class="tasa-value" id="tasa-oficial"></span>
+          </div>
+          <div class="tasa-row">
+              <span class="tasa-label">Paralelo:</span>
+              <span class="tasa-value" id="tasa-paralelo"></span>
+          </div>
+          <div class="tasa-row tasa-promedio">
+              <span class="tasa-label">Promedio:</span>
+              <span class="tasa-value" id="tasa-promedio"></span>
+          </div>
+          <div class="tasa-fecha" id="tasa-fecha"></div>
+      </div>
+  </div>
+  <div class="update-prices-card">
+      <h2>Actualizar precios de productos</h2>
+      <form id="form-actualizar-precios" style="margin-bottom:0; display: flex; flex-direction: column; align-items: center;">
+          <label style="margin-bottom: 8px;">Selecciona la tasa a aplicar:</label>
+          <div class="tasa-selector-horizontales" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
+              <button type="button" class="filtro-btn active" data-tasa="oficial">Oficial</button>
+              <button type="button" class="filtro-btn" data-tasa="paralelo">Paralelo</button>
+              <button type="button" class="filtro-btn" data-tasa="promedio">Promedio</button>
+          </div>
+          <input type="hidden" name="tasa" id="tasa-hidden" value="oficial">
+          <button type="button" class="button" style="margin-top: 8px;" onclick="vistaPreviaActualizacion()">Vista previa y actualizar</button>
+      </form>
+      <div id="preview-modal" class="modal" style="display:none;">
+          <div class="modal-content">
+              <button class="close-modal-btn" onclick="cerrarModal()" title="Cerrar vista previa">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <span style="margin-left:6px;">Cerrar</span>
+              </button>
+              <div>
+                <h3>Vista previa de actualización de precios</h3>
+              </div>
+              
+              <div id="preview-table-container" style="max-height:300px;overflow:auto;"></div>
+              <button class="button" onclick="confirmarActualizacion()">Confirmar actualización</button>
+          </div>
+      </div>
+  </div>
+</div>
+<style>
+.tasa-dolar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  padding: 20px 0 0 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.exchange-rate-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.08); /* Sombra suave tipo drag */
+  border-radius: 10px;
+  background: #fff;
+  border: 1.5px solid #1ec6b6;
+}
+.update-prices-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+  box-sizing: border-box;
+  background: #fff;
+}
+body.dark-mode .exchange-rate-card {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+}
+body.dark-mode .update-prices-card {
+  background: #23272b;
+  color: #e0e0e0;
+}
+.update-prices-card h2 {
+  margin-bottom: 18px;
+}
+.tasa-selector-horizontales .filtro-btn {
+  background: #e0f7fa;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.tasa-selector-horizontales .filtro-btn.active {
+  background: #1ec6b6;
+  color: #fff;
+}
+.update-prices-card form label {
+  margin-bottom: 8px;
+}
+.update-prices-card form button {
+  margin-top: 8px;
+}
+.modal-content {
+  position: relative;
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 18px 18px 18px;
+  max-width: 420px;
+  margin: 40px auto;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.08);
+  border: 1.5px solid #1ec6b6;
+  text-align: center;
+}
+body.dark-mode .modal-content {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+}
+.close-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #b71c1c;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 0.75em;
+  font-weight: 600;
+  cursor: pointer;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  transition: background 0.18s, color 0.18s;
+  z-index: 10;
+}
+.close-modal-btn:hover {
+  background: #0e5e5a;
+  color: #fff;
+}
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+let tasas = {};
+fetch("{{ url_for('tasa_cambio') }}")
+  .then(res => res.json())
+  .then(data => {
+    tasas = data;
+    document.getElementById('tasa-loading').style.display = 'none';
+    document.getElementById('tasa-content').style.display = 'block';
+    if(data.oficial && data.paralelo) {
+      document.getElementById('tasa-oficial').textContent = data.oficial.promedio + ' Bs/USD';
+      document.getElementById('tasa-paralelo').textContent = data.paralelo.promedio + ' Bs/USD';
+      const prom = ((parseFloat(data.oficial.promedio) + parseFloat(data.paralelo.promedio)) / 2).toFixed(3);
+      document.getElementById('tasa-promedio').textContent = prom + ' Bs/USD';
+      let fecha = data.oficial.fecha || data.paralelo.fecha;
+      if(fecha) {
+        const f = new Date(fecha);
+        document.getElementById('tasa-fecha').textContent = 'Actualizado: ' + f.toLocaleString('es-VE');
+      }
+    } else {
+      document.getElementById('tasa-content').innerHTML = '<div style="color:#c00;">No se pudo obtener la tasa de cambio.</div>';
+    }
+  })
+  .catch(() => {
+    document.getElementById('tasa-loading').textContent = 'Error al cargar la tasa de cambio.';
+  });
+
+// Selector horizontal de tasa
+const tasaBtns = document.querySelectorAll('.tasa-selector-horizontales .filtro-btn');
+const tasaHidden = document.getElementById('tasa-hidden');
+tasaBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    tasaBtns.forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    tasaHidden.value = this.getAttribute('data-tasa');
+  });
+});
+
+function vistaPreviaActualizacion() {
+    const tasaSel = document.getElementById('tasa-hidden').value;
+    let tasaValor = 0;
+    if (tasaSel === 'oficial') tasaValor = tasas.oficial.promedio;
+    else if (tasaSel === 'paralelo') tasaValor = tasas.paralelo.promedio;
+    else tasaValor = ((parseFloat(tasas.oficial.promedio) + parseFloat(tasas.paralelo.promedio)) / 2).toFixed(3);
+    fetch('/api/productos')
+      .then(res => res.json())
+      .then(productos => {
+        let html = '<table style="width:100%;font-size:0.98em;"><tr><th>Nombre</th><th>Precio $</th><th>Precio Bs (nuevo)</th></tr>';
+        productos.forEach(p => {
+          let precioUSD = p.precio && p.precio['$'] ? parseFloat(p.precio['$']) : 0;
+          let nuevoBs = (precioUSD * tasaValor).toFixed(2);
+          html += `<tr><td>${p.nombre}</td><td>$${precioUSD}</td><td>Bs ${nuevoBs}</td></tr>`;
+        });
+        html += '</table>';
+        document.getElementById('preview-table-container').innerHTML = html;
+        document.getElementById('preview-modal').style.display = 'block';
+      });
+}
+function cerrarModal() {
+    document.getElementById('preview-modal').style.display = 'none';
+}
+function confirmarActualizacion() {
+    const tasaSel = document.getElementById('tasa-hidden').value;
+    fetch('/actualizar_precios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tasa: tasaSel })
+    })
+    .then(res => res.json())
+    .then(data => {
+        cerrarModal();
+        if(data.success && data.redirect) {
+            window.location.href = data.redirect;
+        }
+        // Si no hay redirección, podrías mostrar un error o fallback aquí si lo deseas
+    });
+}
+</script>
+{% endblock %}

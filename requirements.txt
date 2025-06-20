@@ -1,5 +1,8 @@
 Flask
+Flask-Mail
 pymongo
 gunicorn
 requests
 google-cloud-storage
+Pillow
+pytz

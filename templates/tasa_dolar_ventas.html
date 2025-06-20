@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+
+
+{% block title %}
+    StockTaking | Tasa de Cambio
+{% endblock %}
+
+
+{% block content %}
+<div class="tasa-dolar-container">
+  <h1>Tasa de Cambio</h1>
+  <div class="exchange-rate-card">
+      <div id="tasa-loading" style="text-align:center; color:#888;">Cargando tasas...</div>
+      <div id="tasa-content" style="display:none;">
+          <div class="tasa-row">
+              <span class="tasa-label">Oficial:</span>
+              <span class="tasa-value" id="tasa-oficial"></span>
+          </div>
+          <div class="tasa-row">
+              <span class="tasa-label">Paralelo:</span>
+              <span class="tasa-value" id="tasa-paralelo"></span>
+          </div>
+          <div class="tasa-row tasa-promedio">
+              <span class="tasa-label">Promedio:</span>
+              <span class="tasa-value" id="tasa-promedio"></span>
+          </div>
+          <div class="tasa-fecha" id="tasa-fecha"></div>
+      </div>
+  </div>
+  
+</div>
+<style>
+.tasa-dolar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+  padding: 20px 0 0 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.exchange-rate-card {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto 28px auto;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.08); /* Sombra suave tipo drag */
+  border-radius: 10px;
+  background: #fff;
+  border: 1.5px solid #1ec6b6;
+}
+body.dark-mode .exchange-rate-card {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+}
+</style>
+{% endblock %}
+{% block scripts %}
+<script>
+let tasas = {};
+fetch("{{ url_for('tasa_cambio') }}")
+  .then(res => res.json())
+  .then(data => {
+    tasas = data;
+    document.getElementById('tasa-loading').style.display = 'none';
+    document.getElementById('tasa-content').style.display = 'block';
+    if(data.oficial && data.paralelo) {
+      document.getElementById('tasa-oficial').textContent = data.oficial.promedio + ' Bs/USD';
+      document.getElementById('tasa-paralelo').textContent = data.paralelo.promedio + ' Bs/USD';
+      const prom = ((parseFloat(data.oficial.promedio) + parseFloat(data.paralelo.promedio)) / 2).toFixed(3);
+      document.getElementById('tasa-promedio').textContent = prom + ' Bs/USD';
+      let fecha = data.oficial.fecha || data.paralelo.fecha;
+      if(fecha) {
+        const f = new Date(fecha);
+        document.getElementById('tasa-fecha').textContent = 'Actualizado: ' + f.toLocaleString('es-VE');
+      }
+    } else {
+      document.getElementById('tasa-content').innerHTML = '<div style="color:#c00;">No se pudo obtener la tasa de cambio.</div>';
+    }
+  })
+  .catch(() => {
+    document.getElementById('tasa-loading').textContent = 'Error al cargar la tasa de cambio.';
+  });
+</script>
+{% endblock %}
