@@ -7,43 +7,181 @@
 
 
 {% block main %}
-<div class="landing-hero" style="text-align:center; margin: 40px auto 30px auto; max-width: 700px;">
-    <img src="/static/sale.svg" alt="StockTaking Logo" style="width:90px; margin-bottom:18px;">
-    <h1 style="font-size:2.5em; color:#0e5e5a; margin-bottom:10px;">StockTaking App</h1>
-    <p style="font-size:1.25em; color:#444; margin-bottom:22px;">
+<style>
+.landing-hero {
+    background: linear-gradient(120deg, #e0f7fa 0%, #bdffff 100%);
+    border-radius: 18px;
+    box-shadow: 0 4px 32px #0e5e5a18;
+    padding: 48px 32px 36px 32px;
+    margin-top: 100px;
+    margin-bottom: 36px;
+    max-width: 72.5%;
+    position: relative;
+    z-index: 1;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+.landing-hero img {
+    animation: floatLogo 2.5s ease-in-out infinite alternate;
+}
+@keyframes floatLogo {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-12px); }
+}
+.landing-hero h1 {
+    font-size: 2.7em;
+    color: #0e5e5a;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+.landing-hero p {
+    font-size: 1.22em;
+    color: #444;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+.landing-hero .button {
+    border-radius: 22px;
+    border: none;
+    background: #0e5e5a;
+    color: #fff;
+    font-weight: 600;
+    margin: 0 6px 0 0;
+    box-shadow: 0 2px 8px #0e5e5a22;
+    transition: background 0.2s, transform 0.2s;
+}
+.landing-hero .button:hover {
+    background: #1ec6b6;
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
+.landing-hero .button:last-child {
+    background: #1ec6b6;
+    color: #fff;
+}
+.landing-hero .button:last-child:hover {
+    background: #0e5e5a;
+}
+.features-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin: 40px 0 0 0;
+    z-index: 1;
+    position: relative;
+}
+.feature-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px 22px 28px 22px;
+    max-width: 320px;
+    min-width: 240px;
+    box-shadow: 0 2px 16px #0e5e5a13;
+    text-align: center;
+    transition: transform 0.18s, box-shadow 0.18s;
+    border: 1.5px solid #e0f7fa;
+    position: relative;
+    overflow: hidden;
+}
+.feature-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px #1ec6b633;
+    border-color: #1ec6b6;
+}
+.feature-card img {
+    width: 44px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 2px 6px #1ec6b622);
+}
+.feature-card h3 {
+    color: #0e5e5a;
+    font-size: 1.18em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.feature-card p {
+    color: #444;
+    font-size: 1.04em;
+    line-height: 1.5;
+}
+.cta-section {
+    text-align: center;
+    margin: 70px 0 0 0;
+    padding: 38px 0 30px 0;
+    background: linear-gradient(120deg, #0e5e5a 0%, #01776b 100%);
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    color: #fff;
+}
+.cta-section h2 {
+    color: #fff;
+    font-size: 2em;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.cta-section p {
+    color: #e0f7fa;
+    font-size: 1.08em;
+}
+.cta-section a {
+    color: #fff;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+.cta-section a:hover {
+    color: #ffe082;
+}
+@media (max-width: 900px) {
+    .features-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 22px;
+    }
+    .landing-hero {
+        padding: 32px 10px 24px 10px;
+    }
+}
+</style>
+<div class="landing-hero">
+    <img src="/static/sale.svg" alt="StockTaking Logo">
+    <h1>StockTaking App</h1>
+    <p>
         La solución moderna y sencilla para gestionar inventarios, ventas y productos en tu negocio.<br>
         Controla tu stock, automatiza tareas y toma decisiones inteligentes desde cualquier lugar.
     </p>
     <a href="{{ url_for('auth.login') }}" class="button" style="padding:12px 32px; font-size:1.1em; margin-bottom:10px;">Iniciar sesión</a>
-    <a href="{{ url_for('auth.register') }}" class="button" style="padding:12px 32px; font-size:1.1em; background:#1ec6b6; color:#fff; margin-left:10px;">Crear cuenta</a>
+    <a href="{{ url_for('auth.register') }}" class="button" style="padding:12px 32px; font-size:1.1em; margin-left:10px;">Crear cuenta</a>
 </div>
 
-<div class="features-section" style="display:flex; flex-wrap:wrap; justify-content:center; gap:32px; margin: 40px 0 0 0;">
-    <div class="feature-card" style="background:#f8f8f8; border-radius:12px; padding:28px 22px; max-width:320px; min-width:240px; box-shadow:0 2px 12px #0001;">
-        <img src="/static/settings.svg" alt="Gestión de inventario" style="width:38px; margin-bottom:10px;">
-        <h3 style="color:#0e5e5a;">Gestión de Inventario</h3>
+<div class="features-section">
+    <div class="feature-card">
+        <img src="/static/settings.svg" alt="Gestión de inventario">
+        <h3>Gestión de Inventario</h3>
         <p>Agrega, edita y organiza productos, categorías y stock en tiempo real. Visualiza tu inventario de forma clara y personalizable.</p>
     </div>
-    <div class="feature-card" style="background:#f8f8f8; border-radius:12px; padding:28px 22px; max-width:320px; min-width:240px; box-shadow:0 2px 12px #0001;">
-        <img src="/static/sale.svg" alt="Ventas rápidas" style="width:38px; margin-bottom:10px;">
-        <h3 style="color:#0e5e5a;">Ventas Rápidas y Seguras</h3>
+    <div class="feature-card">
+        <img src="/static/sale.svg" alt="Ventas rápidas">
+        <h3>Ventas Rápidas y Seguras</h3>
         <p>Registra ventas fácilmente, consulta historial y obtén reportes automáticos. Controla precios en dólares y bolívares.</p>
     </div>
-    <div class="feature-card" style="background:#f8f8f8; border-radius:12px; padding:28px 22px; max-width:320px; min-width:240px; box-shadow:0 2px 12px #0001;">
-        <img src="/static/dollar.svg" alt="Tasa de cambio" style="width:38px; margin-bottom:10px;">
-        <h3 style="color:#0e5e5a;">Tasa de Cambio Actualizada</h3>
+    <div class="feature-card">
+        <img src="/static/dollar.svg" alt="Tasa de cambio">
+        <h3>Tasa de Cambio Actualizada</h3>
         <p>Actualiza precios automáticamente según la tasa oficial o paralela. Mantén tus productos siempre al día.</p>
     </div>
-    <div class="feature-card" style="background:#f8f8f8; border-radius:12px; padding:28px 22px; max-width:320px; min-width:240px; box-shadow:0 2px 12px #0001;">
-        <img src="/static/categorias.json" alt="Personalización" style="width:38px; margin-bottom:10px;">
-        <h3 style="color:#0e5e5a;">Personalización Total</h3>
+    <div class="feature-card">
+        <img src="static\widgetsmith.svg" alt="Personalización">
+        <h3>Personalización Total</h3>
         <p>Configura columnas, categorías y campos personalizados para adaptar la app a tu negocio.</p>
     </div>
 </div>
 
-<div class="cta-section" style="text-align:center; margin: 60px 0 0 0;">
-    <h2 style="color:#0e5e5a;">¡Empieza a optimizar tu inventario hoy!</h2>
-    <p style="color:#555;">StockTaking App es gratis para pequeños negocios. <br>¿Tienes dudas? <a href="mailto:soporte@stocktaking.com">Contáctanos</a></p>
+<div class="cta-section">
+    <h2>¡Empieza a optimizar tu inventario hoy!</h2>
+    <p>StockTaking App es gratis para pequeños negocios. <br>¿Tienes dudas? <a href="https://www.instagram.com/cmoinr/">Contáctanos</a></p>
 </div>
 {% endblock %}
 
