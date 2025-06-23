@@ -6,3 +6,4 @@ requests
 google-cloud-storage
 Pillow
 pytz
+python-dotenv
