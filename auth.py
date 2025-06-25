@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 from flask_mail import Message
 from models.user import User
+from login_required import login_required
+from bson.objectid import ObjectId
 import random
 import string
 import re
@@ -154,3 +156,27 @@ def editar_usuario():
         flash('Información actualizada correctamente.', 'success')
         return redirect(url_for('dashboard'))
     return render_template('editar_usuario.html', user=user_doc)
+
+
+@auth_bp.route('/cambiar_contrasena', methods=['GET', 'POST'])
+@login_required
+def cambiar_contrasena():
+    db = current_app.db
+    user_id = session.get('user_id')
+    users_col = db['users']
+    user_doc = users_col.find_one({'_id': ObjectId(user_id)})
+    if request.method == 'POST':
+        actual = request.form['actual']
+        nueva = request.form['nueva']
+        confirmar = request.form['confirmar']
+        if nueva != confirmar:
+            flash('Las contraseñas no coinciden.')
+            return render_template('cambiar_contrasena.html')
+        # Aquí deberías validar la contraseña actual y actualizar la nueva (esto depende de tu modelo de usuario)
+        if not User.check_password(user_doc, actual):
+            flash('Contraseña actual incorrecta.')
+            return render_template('cambiar_contrasena.html')
+        users_col.update_one({'_id': ObjectId(user_id)}, {'$set': {'password': User.hash_password(nueva)}})
+        flash('Contraseña cambiada exitosamente.')
+        return redirect(url_for('user_home'))
+    return render_template('cambiar_contrasena.html')

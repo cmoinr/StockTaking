@@ -1,0 +1,112 @@
+/* Section Navigation Styles */
+.section-selector {
+  margin: 18px 0 18px 0;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.section-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 2px solid #e6fcfa;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1em;
+  color: #0e5e5a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(14, 94, 90, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(30, 198, 182, 0.1), transparent);
+  transition: left 0.4s;
+}
+
+.section-btn:hover::before {
+  left: 100%;
+}
+
+.section-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(14, 94, 90, 0.12);
+  border-color: #1ec6b6;
+}
+
+.section-btn.active {
+  background: linear-gradient(135deg, #1ec6b6, #0e5e5a);
+  color: #ffffff;
+  border-color: #1ec6b6;
+  box-shadow: 0 4px 15px rgba(30, 198, 182, 0.25);
+}
+
+.section-btn.active:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(30, 198, 182, 0.3);
+}
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.section-btn:hover .section-icon {
+  transform: scale(1.1);
+}
+
+.section-btn.active .section-icon {
+  transform: scale(1.05);
+}
+
+/* Dark mode for section buttons */
+body.dark-mode .section-btn {
+  background: #2a2a2a;
+  border-color: #404040;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .section-btn:hover {
+  border-color: #1ec6b6;
+  box-shadow: 0 4px 15px rgba(30, 198, 182, 0.15);
+}
+
+body.dark-mode .section-btn.active {
+  background: linear-gradient(135deg, #1ec6b6, #0e5e5a);
+  color: #ffffff;
+  border-color: #1ec6b6;
+  box-shadow: 0 4px 15px rgba(30, 198, 182, 0.25);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-selector {
+    gap: 8px;
+    margin: 15px 0;
+  }
+  
+  .section-btn {
+    padding: 10px 16px;
+    font-size: 0.9em;
+  }
+  
+  .section-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}

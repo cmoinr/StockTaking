@@ -1,6 +1,10 @@
-{% extends 'layout.html' %}
-{% block title %}Cambiar contraseña{% endblock %}
-{% block content %}
+{% extends 'home_layout.html' %}
+
+{% block title %}
+    Cambiar contraseña | StockTaking App
+{% endblock %}
+
+{% block main %}
 <h2>Cambiar contraseña</h2>
 <form method="post">
     <label>Contraseña actual:<br><input type="password" name="actual" required></label><br><br>

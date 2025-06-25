@@ -52,19 +52,7 @@ def nueva_venta():
     for p in productos:
         p['_id'] = str(p['_id'])
         p['user_id'] = str(p['user_id'])
-    return render_template(
-        'nueva_venta.html', 
-        productos=productos,
-
-        show_tasa_cambio=False,
-        show_categorias=False,
-        show_nuevo_producto=False,
-        show_buscar_producto=False,
-        show_dashboard=False,
-
-        show_tasa_ventas=True,
-        show_nueva_venta=True    
-    )
+    return render_template('nueva_venta.html', productos=productos)
 
 
 @ventas_bp.route('/ventas')
@@ -82,31 +70,9 @@ def listar_ventas():
                 # Asume UTC si es naive
                 fecha = pytz.utc.localize(fecha)
             v['fecha'] = fecha.astimezone(caracas_tz)
-    return render_template(
-        'ventas.html',
-        ventas=ventas,
-
-        show_tasa_cambio=False,
-        show_categorias=False,
-        show_nuevo_producto=False,
-        show_buscar_producto=False,
-        show_dashboard=False,
-
-        show_tasa_ventas=True,
-        show_nueva_venta=True    
-    )
+    return render_template('ventas.html', ventas=ventas)
 
 
 @ventas_bp.route('/tasa_dolar_ventas', methods=['GET'])
 def tasa_dolar_ventas():
-    return render_template(
-        'tasa_dolar_ventas.html',
-        show_tasa_cambio=False,
-        show_categorias=False,
-        show_nuevo_producto=False,
-        show_buscar_producto=False,
-        show_dashboard=False,
-
-        show_tasa_ventas=True,
-        show_nueva_venta=True
-    )
+    return render_template('tasa_dolar_ventas.html')

@@ -1,7 +1,8 @@
 from pymongo import MongoClient
+import os
 
 # Cambia la URI si tu MongoDB no está en localhost o usa otro puerto
-MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_URI = os.environ.get('MONGO_URI')
 
 try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=3000)
