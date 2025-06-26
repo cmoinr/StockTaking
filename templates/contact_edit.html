@@ -1,0 +1,414 @@
+{% extends 'home_layout.html' %}
+
+{% block title %}
+    Editar información | StockTaking App
+{% endblock %}
+
+{% block main %}
+<div class="edit-container">
+    <div class="edit-header">
+        <div class="edit-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="m18.5 2.5 a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+        </div>
+        <h2>Editar Información de Usuario</h2>
+    </div>
+
+    <form method="post" class="edit-form">
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="first_name">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Nombre
+                </label>
+                <input type="text" name="first_name" id="first_name" value="{{ user.first_name }}" required>
+                <div class="input-focus-line"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="last_name">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Apellido
+                </label>
+                <input type="text" name="last_name" id="last_name" value="{{ user.last_name }}" required>
+                <div class="input-focus-line"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Correo electrónico
+                </label>
+                <input type="email" name="email" id="email" value="{{ user.email }}" required>
+                <div class="input-focus-line"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    Teléfono
+                </label>
+                <input type="text" name="phone" id="phone" value="{{ user.phone }}" required pattern="[0-9+\-() ]{7,20}" title="Ingrese un teléfono válido">
+                <div class="input-focus-line"></div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="save-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17,21 17,13 7,13 7,21"/>
+                    <polyline points="7,3 7,8 15,8"/>
+                </svg>
+                <span>Guardar cambios</span>
+            </button>
+            
+            <a href="{{ url_for('contact_info') }}" class="cancel-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                <span>Cancelar</span>
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Edit Container */
+.edit-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* Header with Icon */
+.edit-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.edit-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: pulseIcon 3s ease-in-out infinite;
+}
+
+.edit-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.edit-header h2 {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #0e5e5a;
+    font-size: 2em;
+    text-align: center;
+}
+
+/* Form Styles */
+.edit-form {
+    background: #ffffff;
+    border: 2px solid #e6fcfa;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(14, 94, 90, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(30, 198, 182, 0.02), transparent);
+    animation: formShimmer 4s infinite;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Input Groups */
+.input-group {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-size: 1em;
+    transition: color 0.3s ease;
+}
+
+.input-group input {
+    width: 90%;
+    padding: 15px 20px;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 1.1em;
+    background: #ffffff;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.1);
+    transform: translateY(-2px);
+}
+
+.input-group input:focus + .input-focus-line {
+    transform: scaleX(1);
+}
+
+.input-focus-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(135deg, #1ec6b6, #0e5e5a);
+    border-radius: 0 0 12px 12px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    /* linear-gradient(135deg, #1ec6b6, #0e5e5a); */
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(198, 125, 30, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.save-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.save-btn:hover::before {
+    left: 100%;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(30, 198, 182, 0.35);
+}
+
+.cancel-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    padding: 14px 28px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cancel-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(231, 76, 60, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.cancel-btn:hover::before {
+    left: 100%;
+}
+
+.cancel-btn:hover {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.25);
+}
+
+/* Dark Mode Styles */
+body.dark-mode .edit-header h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .edit-form {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .input-group label {
+    color: #ffffff;
+}
+
+body.dark-mode .input-group input {
+    background: #333333;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .input-group input:focus {
+    border-color: #1ec6b6;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.2);
+}
+
+body.dark-mode .cancel-btn {
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+}
+
+body.dark-mode .cancel-btn:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Animations */
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes formShimmer {
+    0% { left: -100%; }
+    50% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .edit-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .edit-icon svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .edit-header h2 {
+        font-size: 1.5em;
+    }
+    
+    .edit-form {
+        padding: 25px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .save-btn, .cancel-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .input-group input {
+        padding: 12px 16px;
+        font-size: 1em;
+    }
+}
+</style>
+{% endblock %}

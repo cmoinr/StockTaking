@@ -5,11 +5,648 @@
 {% endblock %}
 
 {% block main %}
-<h2>Cambiar contraseña</h2>
-<form method="post">
-    <label>Contraseña actual:<br><input type="password" name="actual" required></label><br><br>
-    <label>Nueva contraseña:<br><input type="password" name="nueva" required></label><br><br>
-    <label>Confirmar nueva contraseña:<br><input type="password" name="confirmar" required></label><br><br>
-    <button type="submit" class="button">Cambiar contraseña</button>
-</form>
+<div class="password-container">
+    <div class="password-header">
+        <div class="password-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <circle cx="12" cy="16" r="1"/>
+                <path d="m7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+        </div>
+        <h2>Cambiar contraseña</h2>
+        <p>Actualiza tu contraseña para mantener tu cuenta segura</p>
+    </div>
+
+    <form method="post" class="password-form">
+        <div class="form-grid">
+            <div class="input-group">
+                <label for="actual">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <circle cx="12" cy="16" r="1"/>
+                        <path d="m7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Contraseña actual
+                </label>
+                <input type="password" name="actual" id="actual" required>
+                <div class="input-focus-line"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="nueva">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                    </svg>
+                    Nueva contraseña
+                </label>
+                <input type="password" name="nueva" id="nueva" required>
+                <div class="input-focus-line"></div>
+                <div class="password-toggle" onclick="togglePassword('nueva')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+                
+                <!-- Password Strength Indicator -->
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">Ingresa tu nueva contraseña</div>
+                    <div class="strength-requirements" id="strengthRequirements">
+                        <div class="requirement" id="req-length">
+                            <svg width="14" height="14" class="req-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Al menos 8 caracteres
+                        </div>
+                        <div class="requirement" id="req-uppercase">
+                            <svg width="14" height="14" class="req-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Una letra mayúscula
+                        </div>
+                        <div class="requirement" id="req-lowercase">
+                            <svg width="14" height="14" class="req-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Una letra minúscula
+                        </div>
+                        <div class="requirement" id="req-number">
+                            <svg width="14" height="14" class="req-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Un número
+                        </div>
+                        <div class="requirement" id="req-special">
+                            <svg width="14" height="14" class="req-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"/>
+                            </svg>
+                            Un carácter especial (!@#$%^&*)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4"/>
+                        <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h18z"/>
+                        <path d="M3 12v6c0 .552.448 1 1 1h16c.552 0 1-.448 1-1v-6"/>
+                    </svg>
+                    Confirmar nueva contraseña
+                </label>
+                <input type="password" name="confirmar" id="confirmar" required>
+                <div class="input-focus-line"></div>
+                <div class="password-toggle" onclick="togglePassword('confirmar')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+                <div class="password-match" id="passwordMatch"></div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="save-btn" id="submitBtn" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                </svg>
+                <span>Cambiar contraseña</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+/* Password Container */
+.password-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* Header with Icon */
+.password-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.password-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: pulseIcon 3s ease-in-out infinite;
+}
+
+.password-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.password-header h2 {
+    margin: 0 0 10px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: #0e5e5a;
+    font-size: 2em;
+    text-align: center;
+}
+
+.password-header p {
+    margin: 0;
+    color: #666;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+/* Form Styles */
+.password-form {
+    background: #ffffff;
+    border: 2px solid #e6fcfa;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 12px rgba(14, 94, 90, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.password-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(30, 198, 182, 0.02), transparent);
+    animation: formShimmer 4s infinite;
+}
+
+.form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Input Groups */
+.input-group {
+    position: relative;
+}
+
+.input-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.input-group input {
+    width: 82.5%;
+    padding: 15px 50px 15px 20px;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 1.1em;
+    background: #ffffff;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.1);
+    transform: translateY(-2px);
+}
+
+.input-group input:focus + .input-focus-line {
+    transform: scaleX(1);
+}
+
+.input-focus-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-radius: 0 0 12px 12px;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    z-index: 2;
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    transition: color 0.3s ease;
+    z-index: 3;
+}
+
+.password-toggle:hover {
+    color: #1ec6b6;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+.strength-fill.weak {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.strength-fill.medium {
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.strength-fill.good {
+    background: linear-gradient(90deg, #f1c40f, #f39c12);
+}
+
+.strength-fill.strong {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+}
+
+.strength-text {
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.strength-requirements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.requirement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.requirement .req-icon {
+    opacity: 0.3;
+    transition: all 0.3s ease;
+}
+
+.requirement.met {
+    color: #27ae60;
+}
+
+.requirement.met .req-icon {
+    opacity: 1;
+    stroke: #27ae60;
+}
+
+/* Password Match Indicator */
+.password-match {
+    margin-top: 10px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.password-match.match {
+    color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.password-match.no-match {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.save-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: not-allowed;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(149, 165, 166, 0.25);
+    position: relative;
+    overflow: hidden;
+    opacity: 0.6;
+}
+
+.save-btn.enabled {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    cursor: pointer;
+    opacity: 1;
+    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.25);
+}
+
+.save-btn.enabled::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.save-btn.enabled:hover::before {
+    left: 100%;
+}
+
+.save-btn.enabled:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(155, 89, 182, 0.35);
+}
+
+/* Dark Mode Styles */
+body.dark-mode .password-header h2 {
+    color: #ffffff;
+}
+
+body.dark-mode .password-header p {
+    color: #cccccc;
+}
+
+body.dark-mode .password-form {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .input-group label {
+    color: #ffffff;
+}
+
+body.dark-mode .input-group input {
+    background: #333333;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .input-group input:focus {
+    border-color: #1ec6b6;
+}
+
+body.dark-mode .password-strength {
+    background: #333333;
+    border-color: #555555;
+}
+
+body.dark-mode .requirement {
+    color: #cccccc;
+}
+
+/* Animations */
+@keyframes pulseIcon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+@keyframes formShimmer {
+    0% { left: -100%; }
+    50% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .password-container {
+        margin: 20px auto;
+        padding: 15px;
+    }
+    
+    .password-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .password-icon svg {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .password-header h2 {
+        font-size: 1.5em;
+    }
+    
+    .password-form {
+        padding: 25px;
+    }
+    
+    .strength-requirements {
+        grid-template-columns: 1fr;
+    }
+    
+    .save-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+// Password strength validation
+function checkPasswordStrength(password) {
+    const requirements = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /\d/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+    
+    const score = Object.values(requirements).filter(Boolean).length;
+    
+    return { requirements, score };
+}
+
+function updatePasswordStrength() {
+    const password = document.getElementById('nueva').value;
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthText = document.getElementById('strengthText');
+    
+    if (!password) {
+        strengthFill.style.width = '0%';
+        strengthFill.className = 'strength-fill';
+        strengthText.textContent = 'Ingresa tu nueva contraseña';
+        updateRequirements({});
+        return;
+    }
+    
+    const { requirements, score } = checkPasswordStrength(password);
+    
+    // Update strength bar
+    const percentage = (score / 5) * 100;
+    strengthFill.style.width = percentage + '%';
+    
+    // Update strength text and color
+    let strengthClass = '';
+    let strengthTextContent = '';
+    
+    if (score <= 2) {
+        strengthClass = 'weak';
+        strengthTextContent = 'Contraseña débil';
+    } else if (score <= 3) {
+        strengthClass = 'medium';
+        strengthTextContent = 'Contraseña media';
+    } else if (score <= 4) {
+        strengthClass = 'good';
+        strengthTextContent = 'Contraseña buena';
+    } else {
+        strengthClass = 'strong';
+        strengthTextContent = 'Contraseña fuerte';
+    }
+    
+    strengthFill.className = `strength-fill ${strengthClass}`;
+    strengthText.textContent = strengthTextContent;
+    
+    updateRequirements(requirements);
+    validateForm();
+}
+
+function updateRequirements(requirements) {
+    const reqElements = {
+        'req-length': requirements.length,
+        'req-uppercase': requirements.uppercase,
+        'req-lowercase': requirements.lowercase,
+        'req-number': requirements.number,
+        'req-special': requirements.special
+    };
+    
+    for (const [id, met] of Object.entries(reqElements)) {
+        const element = document.getElementById(id);
+        if (met) {
+            element.classList.add('met');
+        } else {
+            element.classList.remove('met');
+        }
+    }
+}
+
+function checkPasswordMatch() {
+    const newPassword = document.getElementById('nueva').value;
+    const confirmPassword = document.getElementById('confirmar').value;
+    const matchElement = document.getElementById('passwordMatch');
+    
+    if (!confirmPassword) {
+        matchElement.textContent = '';
+        matchElement.className = 'password-match';
+        return false;
+    }
+    
+    if (newPassword === confirmPassword) {
+        matchElement.textContent = '✓ Las contraseñas coinciden';
+        matchElement.className = 'password-match match';
+        return true;
+    } else {
+        matchElement.textContent = '✗ Las contraseñas no coinciden';
+        matchElement.className = 'password-match no-match';
+        return false;
+    }
+}
+
+function validateForm() {
+    const newPassword = document.getElementById('nueva').value;
+    const { score } = checkPasswordStrength(newPassword);
+    const passwordsMatch = checkPasswordMatch();
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (score >= 4 && passwordsMatch && document.getElementById('actual').value) {
+        submitBtn.disabled = false;
+        submitBtn.classList.add('enabled');
+    } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('enabled');
+    }
+}
+
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+    field.setAttribute('type', type);
+}
+
+// Event listeners
+document.getElementById('nueva').addEventListener('input', function() {
+    updatePasswordStrength();
+    checkPasswordMatch();
+});
+
+document.getElementById('confirmar').addEventListener('input', checkPasswordMatch);
+document.getElementById('actual').addEventListener('input', validateForm);
+
+// Initialize
+updatePasswordStrength();
+</script>
 {% endblock %}

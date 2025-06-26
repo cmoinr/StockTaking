@@ -102,15 +102,6 @@ body.dark-mode .register-form-container a {
 }
 </style>
 <div class="register-form-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flashes">
-            {% for category, message in messages %}
-            <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
-    {% endwith %}
     <h2>Registro de Usuario</h2>
     <form method="post">
         <label for="first_name">Nombre:</label>

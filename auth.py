@@ -3,6 +3,7 @@ from flask_mail import Message
 from models.user import User
 from login_required import login_required
 from bson.objectid import ObjectId
+from werkzeug.security import generate_password_hash
 import random
 import string
 import re
@@ -22,6 +23,7 @@ def send_verification_email(email, code):
     """
     mail.send(msg)
 
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -33,7 +35,7 @@ def register():
         db = current_app.db
         users_col = db['users']
         if users_col.find_one({'email': email}):
-            flash('El email ya está registrado.')
+            flash('El email ya está registrado.', 'error')
             return redirect(url_for('auth.register'))
         # Validación de email
         email_regex = r"^[\w\.-]+@[\w\.-]+\.\w{2,}$"
@@ -58,7 +60,7 @@ def register():
             'verification_code': verification_code
         })
         send_verification_email(email, verification_code)
-        flash('Registro exitoso. Revisa tu correo para verificar tu cuenta.')
+        flash('Registro exitoso. Revisa tu correo para verificar tu cuenta.', 'success')
         return redirect(url_for('auth.verify_email', email=email))
     return render_template('register.html')
 
@@ -87,7 +89,7 @@ def verify_email():
         users_col = db['users']
         users_col.update_one({'email': email}, {'$set': {'verification_code': verification_code}})
         if not email:
-            flash('Por favor, proporciona un correo electrónico para verificar.', 'error')
+            flash('Por favor, proporciona un correo electrónico para verificar.', 'warning')
         else:
             send_verification_email(email, verification_code)
         return render_template('verify_email.html', email=email)
@@ -107,26 +109,28 @@ def login():
             if user.check_password(password):
                 session['user_email'] = user.email
                 session['user_id'] = str(user_doc['_id'])
-                flash('Inicio de sesión exitoso.')
+                flash('Inicio de sesión exitoso.', 'success')
                 return redirect(url_for('user_home'))
-        flash('Credenciales incorrectas.')
+        flash('Credenciales incorrectas.', 'error')
         return redirect(url_for('auth.login'))
     return render_template('login.html')
+
 
 @auth_bp.route('/logout')
 def logout():
     session.pop('user_email', None)
-    flash('Sesión cerrada.')
+    flash('Sesión cerrada.', 'info')
     return redirect(url_for('auth.login'))
 
-@auth_bp.route('/editar_usuario', methods=['GET', 'POST'])
-def editar_usuario():
+
+@auth_bp.route('/contact_edit', methods=['GET', 'POST'])
+def contact_edit():
     db = current_app.db
     users_col = db['users']
     user_doc = users_col.find_one({'email': session['user_email']})
     if not user_doc:
         flash('Usuario no encontrado.', 'error')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('contact_info'))
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
@@ -136,16 +140,16 @@ def editar_usuario():
         email_regex = r"^[\w\.-]+@[\w\.-]+\.\w{2,}$"
         if not re.match(email_regex, email):
             flash('El correo electrónico no es válido.', 'error')
-            return render_template('editar_usuario.html', user=user_doc)
+            return render_template('contact_edit.html', user=user_doc)
         # Validación de teléfono Venezuela (+58 o 04xx)
         phone_regex = r"^(\+58|58|0)(4\d{2})(\d{7})$"
         if not re.match(phone_regex, phone):
             flash('El teléfono debe ser venezolano y válido (ej: +584121234567 o 04121234567).', 'error')
-            return render_template('editar_usuario.html', user=user_doc)
+            return render_template('contact_edit.html', user=user_doc)
         # Verificar si el email ya existe en otro usuario
         if email != user_doc['email'] and users_col.find_one({'email': email}):
             flash('El email ya está registrado por otro usuario.', 'error')
-            return render_template('editar_usuario.html', user=user_doc)
+            return render_template('contact_edit.html', user=user_doc)
         users_col.update_one({'_id': user_doc['_id']}, {'$set': {
             'first_name': first_name,
             'last_name': last_name,
@@ -154,8 +158,8 @@ def editar_usuario():
         }})
         session['user_email'] = email
         flash('Información actualizada correctamente.', 'success')
-        return redirect(url_for('dashboard'))
-    return render_template('editar_usuario.html', user=user_doc)
+        return redirect(url_for('contact_info'))
+    return render_template('contact_edit.html', user=user_doc)
 
 
 @auth_bp.route('/cambiar_contrasena', methods=['GET', 'POST'])
@@ -170,13 +174,16 @@ def cambiar_contrasena():
         nueva = request.form['nueva']
         confirmar = request.form['confirmar']
         if nueva != confirmar:
-            flash('Las contraseñas no coinciden.')
+            flash('Las contraseñas no coinciden.', 'error')
             return render_template('cambiar_contrasena.html')
-        # Aquí deberías validar la contraseña actual y actualizar la nueva (esto depende de tu modelo de usuario)
-        if not User.check_password(user_doc, actual):
-            flash('Contraseña actual incorrecta.')
+        # Crear instancia de User a partir del documento de MongoDB
+        user = User.from_document(user_doc)
+        if not user.check_password(actual):
+            flash('Contraseña actual incorrecta.', 'error')
             return render_template('cambiar_contrasena.html')
-        users_col.update_one({'_id': ObjectId(user_id)}, {'$set': {'password': User.hash_password(nueva)}})
-        flash('Contraseña cambiada exitosamente.')
+        # Generar hash de la nueva contraseña
+        nueva_password_hash = generate_password_hash(nueva)
+        users_col.update_one({'_id': ObjectId(user_id)}, {'$set': {'password_hash': nueva_password_hash}})
+        flash('Contraseña cambiada exitosamente.', 'success')
         return redirect(url_for('user_home'))
     return render_template('cambiar_contrasena.html')

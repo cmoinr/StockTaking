@@ -101,10 +101,10 @@ def nuevo_producto():
                 public_url = upload_file_to_gcs(comprimida, force_jpeg=True)
                 data['imagen'] = public_url
             except UnidentifiedImageError:
-                flash('La imagen subida no es válida o está corrupta.')
+                flash('La imagen subida no es válida o está corrupta.', 'error')
                 return render_template('nuevo_producto.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
             except Exception as e:
-                flash(f'Error al procesar la imagen: {str(e)}')
+                flash(f'Error al procesar la imagen: {str(e)}', 'error')
                 return render_template('nuevo_producto.html', categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
         else:
             data['imagen'] = None
@@ -121,10 +121,10 @@ def nuevo_producto():
 
         if validate_product(data):
             get_product_collection(db).insert_one(data)
-            flash('Producto agregado exitosamente.')
+            flash('Producto agregado exitosamente.', 'success')
             return redirect(url_for('inventario'))
         else:
-            flash('Datos inválidos.')
+            flash('Datos inválidos.', 'error')
     return render_template('nuevo_producto.html', categorias=categorias, column_config=config)
 
 
@@ -137,7 +137,7 @@ def editar_producto(id):
     categorias = list(get_category_collection(db).find({'user_id': ObjectId(session['user_id'])}))
     config = get_table_config_for_user(db, session['user_id'])
     if not producto:
-        flash('Producto no encontrado.')
+        flash('Producto no encontrado.', 'error')
         return redirect(url_for('index'))
     if request.method == 'POST':
         update = {
@@ -182,10 +182,10 @@ def editar_producto(id):
                 public_url = upload_file_to_gcs(comprimida, force_jpeg=True)
                 update['imagen'] = public_url
             except UnidentifiedImageError:
-                flash('La imagen subida no es válida o está corrupta.')
+                flash('La imagen subida no es válida o está corrupta.', 'error')
                 return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
             except Exception as e:
-                flash(f'Error al procesar la imagen: {str(e)}')
+                flash(f'Error al procesar la imagen: {str(e)}', 'error')
                 return render_template('editar_producto.html', producto=producto, categorias=categorias, show_categorias=True, show_nuevo_producto=True, show_buscar_producto=True)
         elif eliminar_imagen and imagen_anterior:
             try:
@@ -210,10 +210,10 @@ def editar_producto(id):
 
         if validate_product(update):
             collection.update_one({'_id': ObjectId(id)}, {'$set': update})
-            flash('Producto actualizado.')
+            flash('Producto actualizado.', 'success')
             return redirect(url_for('inventario'))
         else:
-            flash('Datos inválidos.')
+            flash('Datos inválidos.', 'error')
     return render_template('editar_producto.html', producto=producto, categorias=categorias, column_config=config)
 
 
@@ -222,7 +222,7 @@ def editar_producto(id):
 def eliminar_producto(id):
     collection = get_product_collection(db)
     collection.delete_one({'_id': ObjectId(id)})
-    flash('Producto eliminado.')
+    flash('Producto eliminado.', 'success')
     return redirect(url_for('inventario'))
 
 
@@ -396,17 +396,17 @@ def tasa_cambio():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/dashboard')
+@app.route('/contact_info')
 @login_required
-def dashboard():
+def contact_info():
     db = app.db
     users_col = db['users']
     user_doc = users_col.find_one({'email': session['user_email']})
     if not user_doc:
-        flash('Usuario no encontrado.')
+        flash('Usuario no encontrado.', 'error')
         return redirect(url_for('user_home'))
     # Pasar el documento completo del usuario al template
-    return render_template('dashboard.html', user=user_doc)
+    return render_template('contact_info.html', user=user_doc)
 
 
 @app.route('/configurar_columnas', methods=['GET', 'POST'])
@@ -431,7 +431,7 @@ def configurar_columnas():
                 {"user_id": ObjectId(user_id), col["name"]: {"$exists": False}},
                 {"$set": {col["name"]: None}}
             )
-        flash('Configuración de columnas actualizada.')
+        flash('Configuración de columnas actualizada.', 'success')
         return redirect(url_for('inventario'))
     return render_template('configurar_columnas.html', config=config)
 
