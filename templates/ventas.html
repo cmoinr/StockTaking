@@ -33,6 +33,53 @@
   background: #ffffff;
   color: #0e5e5a;
 }
+body.dark-mode .ventas-header h1 {
+    color: #ffffff;
+}
+
+body.dark-mode .ventas-header p {
+    color: #cccccc;
+}
+
+/* Ventas Container */
+.ventas-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Section */
+.ventas-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ventas-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2em;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.ventas-header h1 svg {
+    color: #1ec6b6;
+}
+
+.ventas-header p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* Ventas Content */
+.ventas-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
 </style>
 
 <div class="section-selector" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
@@ -63,12 +110,22 @@
             </svg>
         </div>
         Ventas
-    </button>
-</div>
+    </button>    </div>
 
-<h1>Ventas</h1>
+    <div class="ventas-container">
+        <div class="ventas-header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Ventas
+            </h1>
+            <p>Gestiona y visualiza todas tus transacciones comerciales</p>
+        </div>
 
-<table>
+        <div class="ventas-content">
+            <table>
     <tr>
         <th>Fecha</th>
         <th>Cliente</th>
@@ -93,8 +150,9 @@
             </div>
         </td>
     </tr>
-    {% endfor %}
-</table>
+    {% endfor %}            </table>
+        </div>
+    </div>
 
 <script>
 function mostrarDetalle(id) {

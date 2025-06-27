@@ -60,6 +60,8 @@ body.dark-mode a.button:hover, body.dark-mode button:hover {
 form {
     margin-bottom: 18px;
 }
+/* Estilos generales de inputs comentados para evitar conflictos con vistas de producto */
+/*
 input[type="text"], input[type="number"], select, textarea {
     padding: 7px 10px;
     border: 1px solid #cfd8dc;
@@ -68,11 +70,17 @@ input[type="text"], input[type="number"], select, textarea {
     font-size: 1em;
     font-family: inherit;
 }
-body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+*/
+/* Mantener solo estilos para dark mode de inputs generales */
+body.dark-mode input:not(.form-input):not(.price-input), 
+body.dark-mode select:not(.form-select), 
+body.dark-mode textarea {
     background: #23272b;
     color: #e0e0e0;
     border: 1px solid #444;
 }
+/* Estilos generales de botones comentados para evitar conflictos con vistas de producto */
+/*
 button {
     font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
     background: #1ec6b6;
@@ -88,6 +96,7 @@ button:hover {
     background: #0e5e5a;
     color: #fff;
 }
+*/
 table {
     width: 100%;
     border-collapse: collapse;
@@ -269,6 +278,8 @@ body.dark-mode .navbar {
 .icon-btn:hover svg, .icon-btn:focus svg {
     stroke: #33fce8;
 }
+/* Estilos específicos para formularios de producto están ahora embebidos en las vistas individuales */
+/*
 .form-producto {
     font-family: 'Poppins', 'Segoe UI', Arial, sans-serif !important;
     max-width: 420px;
@@ -343,6 +354,7 @@ body.dark-mode .navbar {
     padding: 10px 0;
     font-size: 1em;
 }
+*/
 /* Fuente uniforme para la sección principal (excepto navbar) */
 .uniform-font {
     font-family: 'Poppins', 'Segoe UI', Arial, sans-serif !important;
@@ -561,8 +573,9 @@ body.dark-mode .form-group .add-car-btn:hover {
     }
 }
 @media (max-width: 600px) {
-    .form-producto { max-width: 98vw; }
-    .form-group input, .form-group select, .add-car-btn, .form-actions .button { max-width: 98vw; }
+    /* Comentado para evitar conflictos con vistas de producto */
+    /* .form-producto { max-width: 98vw; } */
+    /* .form-group input, .form-group select, .add-car-btn, .form-actions .button { max-width: 98vw; } */
     .container { padding: 4px; }
     .navbar {
         padding: 12px 4px 10px 4px;
@@ -571,12 +584,13 @@ body.dark-mode .form-group .add-car-btn:hover {
     .main-title {
         font-size: 1.1em;
     }
-    .icon-btn, button, .button {
+    /* Comentado para evitar conflictos con vistas de producto */
+    /* .icon-btn, button, .button {
         font-size: 1em !important;
         padding: 10px 12px !important;
         min-width: 40px;
         min-height: 40px;
-    }
+    } */
 }
 
 /* Descripción más pequeña y campo flexible */

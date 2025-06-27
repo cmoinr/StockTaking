@@ -7,89 +7,754 @@
 
 
 {% block main %}
-    <form method="post" class="form-producto" id="form-producto" enctype="multipart/form-data">
-        <h1>Editar Producto</h1>
-        <div class="form-group">
-            <label>Imagen del producto:</label>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button type="button" class="button" id="custom-file-btn" onclick="document.getElementById('imagen-input').click()">Cambiar imagen</button>
-                <button type="button" class="button button-danger" id="delete-img-btn" onclick="eliminarImagenActual()">Eliminar imagen</button>
-                <span id="file-name" style="font-size:0.75em; color:#555;">Ningún archivo seleccionado</span>
-            </div>
-            <input type="file" name="imagen" id="imagen-input" accept="image/*" style="display:none;">
-            <input type="hidden" name="eliminar_imagen" id="eliminar-imagen" value="0">
-            <div id="imagen-preview-container" style="margin-top:10px;">
-                {% if producto['imagen'] %}
-                    <img id="imagen-preview" src="{{ producto['imagen'] }}" alt="Previsualización" style="max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
-                {% else %}
-                    <img id="imagen-preview" src="#" alt="Previsualización" style="display:none; max-width:100px; max-height:100px; cursor:pointer; border:1px solid #ccc; border-radius:6px;" onclick="mostrarImagenGrande()">
-                {% endif %}
-            </div>
+    <div class="producto-container">
+        <div class="producto-header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"/>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19.5 2 21l1.5-5L16.5 3.5z"/>
+                </svg>
+                Editar Producto
+            </h1>
+            <p>Modifica la información de tu producto existente</p>
         </div>
-        <div class="form-group">
-            <label>Nombre:</label>
-            <input type="text" name="nombre" value="{{ producto['nombre'] }}" required>
-        </div>
-        <div class="form-group">
-            <label>Categoría:</label>
-            <select name="car_categoria" required>
-                <option value="">Selecciona una categoría</option>
-                {% for cat in categorias %}
-                    <option value="{{ cat['nombre'] }}" {% if producto['categoria'] == cat['nombre'] %}selected{% endif %}>{{ cat['nombre'] }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="form-group">
-            <label style="text-align:center;">Precio:</label>
-            <div class="form-group caracteristica-item">
-                <div style="display:flex; gap:8px; width:100%;">
-                    <input type="number" step="0.01" min="0" name="precio_$" id="precio_dolar" placeholder="$" value="{{ producto['precio']['$'] }}" oninput="convertirPrecio('usd')">
-                    <input type="number" step="0.01" min="0" name="precio_bs" id="precio_bs" placeholder="Bs" value="{{ producto['precio']['bs'] }}" oninput="convertirPrecio('bs')">
-                </div>
-            </div>
-        </div>
-        <div style="text-align:center; margin-bottom:8px;">
-            <small style="font-size:0.75em; color:#555;">Tasa BCV: <span id="tasa-actual">Cargando...</span> Bs/$ <span id="tasa-fecha"></span></small>
-        </div>
-        <div class="form-group">
-            <label>Cantidad disponible (stock):</label>
-            <input type="number" name="stock" min="0" value="{{ producto['stock'] }}" required>
-        </div>
-        <div class="form-group">
-            <label style="text-align:center;">Características del producto:</label>
-            <div id="caracteristicas-list">
-                {% for k, v in producto['caracteristicas'].items() %}
-                    <div class="form-group caracteristica-item">
-                        <div style="display:flex; gap:8px; width:100%;">
-                            <input type="text" name="car_nombre_{{ loop.index }}" value="{{ k }}" placeholder="Nombre">
-                            <input type="text" name="car_valor_{{ loop.index }}" value="{{ v }}" placeholder="Valor">
+
+        <div class="form-container">
+            <form method="post" class="form-producto" id="form-producto" enctype="multipart/form-data">
+                <!-- Imagen del producto -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="9" cy="9" r="2"/>
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                        </svg>
+                        <span>Imagen del Producto</span>
+                    </div>
+                    <div class="form-group image-upload-group">
+                        <div class="image-upload-actions">
+                            <button type="button" class="upload-btn" id="custom-file-btn" onclick="document.getElementById('imagen-input').click()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Cambiar Imagen
+                            </button>
+                            <button type="button" class="delete-image-btn" id="delete-img-btn" onclick="eliminarImagenActual()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                                Eliminar Imagen
+                            </button>
+                            <span id="file-name" class="file-name">Ningún archivo seleccionado</span>
+                        </div>
+                        <input type="file" name="imagen" id="imagen-input" accept="image/*" style="display:none;">
+                        <input type="hidden" name="eliminar_imagen" id="eliminar-imagen" value="0">
+                        <div id="imagen-preview-container" class="image-preview-container">
+                            {% if producto['imagen'] %}
+                                <img id="imagen-preview" src="{{ producto['imagen'] }}" alt="Previsualización" class="image-preview" onclick="mostrarImagenGrande()">
+                            {% else %}
+                                <img id="imagen-preview" src="#" alt="Previsualización" class="image-preview" onclick="mostrarImagenGrande()">
+                            {% endif %}
                         </div>
                     </div>
-                {% endfor %}
-            </div>
-            <div style="text-align:center; margin-bottom:18px;">
-                <button type="button" class="icon-btn" onclick="agregarCaracteristica()">Añadir Característica</button>
-            </div>
-        </div>
-        {% for c in column_config.custom_columns %}
-            <div class="form-group">
-                <label for="custom_{{ c.name }}">{{ c.name|capitalize }}</label>
-                {% if c.type == 'number' %}
-                <input type="number" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-control"
-                    value="{{ producto[c.name] if producto and c.name in producto else '' }}">
-                {% elif c.type == 'date' %}
-                <input type="date" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-control"
-                    value="{{ producto[c.name] if producto and c.name in producto else '' }}">
-                {% else %}
-                <input type="text" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-control"
-                    value="{{ producto[c.name] if producto and c.name in producto else '' }}">
+                </div>
+                <!-- Información básica -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
+                        <span>Información Básica</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Nombre del Producto
+                        </label>
+                        <input type="text" name="nombre" class="form-input" value="{{ producto['nombre'] }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            Categoría
+                        </label>
+                        <select name="car_categoria" class="form-select">
+                            <option value="">Selecciona una categoría</option>
+                            {% for cat in categorias %}
+                                <option value="{{ cat['nombre'] }}" {% if producto['categoria'] == cat['nombre'] %}selected{% endif %}>{{ cat['nombre'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Precio y Stock -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        <span>Precio y Stock</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Precio en Múltiples Monedas</label>
+                        <div class="price-inputs">
+                            <div class="price-input-group">
+                                <div class="currency-symbol">$</div>
+                                <input type="number" step="0.01" min="0" name="precio_$" id="precio_dolar" class="form-input price-input" value="{{ producto['precio']['$'] }}" oninput="convertirPrecio('usd')">
+                            </div>
+                            <div class="price-input-group">
+                                <div class="currency-symbol">Bs</div>
+                                <input type="number" step="0.01" min="0" name="precio_bs" id="precio_bs" class="form-input price-input" value="{{ producto['precio']['bs'] }}" oninput="convertirPrecio('bs')">
+                            </div>
+                        </div>
+                        <div class="exchange-rate-info">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                            Tasa BCV: <span id="tasa-actual">Cargando...</span> Bs/$ <span id="tasa-fecha"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                                <path d="m3.3 7 8.7 5 8.7-5"/>
+                                <path d="M12 22V12"/>
+                            </svg>
+                            Cantidad en Stock
+                        </label>
+                        <input type="number" name="stock" min="0" class="form-input" value="{{ producto['stock'] }}" required>
+                    </div>
+                </div>
+                <!-- Características -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9,11 12,14 22,4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        <span>Características del Producto</span>
+                    </div>
+                    <div class="form-group">
+                        <div id="caracteristicas-list" class="caracteristicas-list">
+                            {% for k, v in producto['caracteristicas'].items() %}
+                                <div class="caracteristica-item">
+                                    <div class="caracteristica-inputs">
+                                        <input type="text" name="car_nombre_{{ loop.index }}" class="form-input char-input" value="{{ k }}" placeholder="Nombre">
+                                        <input type="text" name="car_valor_{{ loop.index }}" class="form-input char-input" value="{{ v }}" placeholder="Valor">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="add-characteristic-container">
+                            <button type="button" class="add-characteristic-btn" onclick="agregarCaracteristica()">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"/>
+                                    <line x1="5" y1="12" x2="19" y2="12"/>
+                                </svg>
+                                Añadir Característica
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columnas personalizadas -->
+                {% if column_config.custom_columns %}
+                <div class="form-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        <span>Campos Personalizados</span>
+                    </div>
+                    {% for c in column_config.custom_columns %}
+                        <div class="form-group">
+                            <label class="form-label" for="custom_{{ c.name }}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+                                </svg>
+                                {{ c.name|capitalize }}
+                            </label>
+                            {% if c.type == 'number' %}
+                            <input type="number" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-input" value="{{ producto[c.name] if producto and c.name in producto else '' }}">
+                            {% elif c.type == 'date' %}
+                            <input type="date" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-input" value="{{ producto[c.name] if producto and c.name in producto else '' }}">
+                            {% else %}
+                            <input type="text" name="custom_{{ c.name }}" id="custom_{{ c.name }}" class="form-input" value="{{ producto[c.name] if producto and c.name in producto else '' }}">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
                 {% endif %}
-            </div>
-        {% endfor %}
-        <div class="form-actions">
-            <button type="submit" class="button">Guardar cambios</button>
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                        Guardar Cambios
+                    </button>
+                    <a href="{{ url_for('inventario') }}" class="cancel-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
+
+<style>
+/* Container Principal */
+.producto-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header Section */
+.producto-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.producto-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2em;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.producto-header h1 svg {
+    color: #1ec6b6;
+}
+
+.producto-header p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* Form Container */
+.form-container {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(14, 94, 90, 0.08);
+    border: 2px solid #e6fcfa;
+    overflow: hidden;
+}
+
+.form-producto {
+    padding: 0;
+    margin: 0;
+}
+
+/* Form Sections */
+.form-section {
+    padding: 25px 30px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e6fcfa;
+}
+
+.section-title svg {
+    color: #1ec6b6;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 8px;
+    font-size: 1em;
+}
+
+.form-label svg {
+    color: #1ec6b6;
+}
+
+/* Form Inputs */
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: inherit;
+    background: #ffffff;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.1);
+}
+
+/* Eliminar flechitas de inputs numéricos */
+.form-input[type="number"] {
+    appearance: textfield; /* Standard */
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: inherit;
+    background: #ffffff;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.1);
+}
+
+/* Image Upload */
+.image-upload-group {
+    text-align: center;
+}
+
+.image-upload-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.upload-btn {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 198, 182, 0.3);
+    background: linear-gradient(135deg, #17a2b8, #1ec6b6);
+}
+
+.delete-image-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.delete-image-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, #c82333, #dc3545);
+}
+
+.file-name {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+}
+
+.image-preview-container {
+    display: flex;
+    justify-content: center;
+}
+
+.image-preview {
+    max-width: 150px;
+    max-height: 150px;
+    cursor: pointer;
+    border: 3px solid #e6fcfa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview:hover {
+    transform: scale(1.05);
+    border-color: #1ec6b6;
+    box-shadow: 0 6px 20px rgba(30, 198, 182, 0.2);
+}
+
+/* Price Inputs */
+.price-inputs {
+    display: flex;
+    gap: 15px;
+}
+
+.price-input-group {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: #ffffff;
+}
+
+.price-input-group:focus-within {
+    border: none;
+    box-shadow: 0 0 0 3px rgba(30, 198, 182, 0.1);
+}
+
+.currency-symbol {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    padding: 12px 15px;
+    font-weight: 600;
+    font-size: 1.1em;
+    min-width: 50px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.price-input {
+    border: none;
+    outline: none;
+    padding: 12px 15px;
+    margin: 0;
+    flex: 1;
+    background: transparent;
+    font-size: 1em;
+    font-family: inherit;
+    color: #2c3e50;
+    appearance: textfield; /* Standard */
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.price-input::-webkit-outer-spin-button,
+.price-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.price-input:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+}
+
+.exchange-rate-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #f8fffe;
+    border-radius: 6px;
+    border: 1px solid #e6fcfa;
+}
+
+.exchange-rate-info svg {
+    color: #1ec6b6;
+}
+
+/* Características */
+.caracteristicas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.caracteristica-item {
+    background: #f8fffe;
+    border: 2px solid #e6fcfa;
+    border-radius: 10px;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+.caracteristica-item:hover {
+    border-color: #1ec6b6;
+    box-shadow: 0 4px 15px rgba(30, 198, 182, 0.1);
+}
+
+.caracteristica-inputs {
+    display: flex;
+    gap: 12px;
+}
+
+.char-input {
+    flex: 1;
+}
+
+.add-characteristic-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.add-characteristic-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.add-characteristic-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+/* Form Actions */
+.form-actions {
+    padding: 30px;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 25px;
+    font-size: 1.05em;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+    background: linear-gradient(135deg, #495057, #6c757d);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .producto-container {
+        padding: 15px;
+    }
+    
+    .producto-header h1 {
+        font-size: 1.8em;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .form-section {
+        padding: 20px 15px;
+    }
+    
+    .price-inputs {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .caracteristica-inputs {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .submit-btn,
+    .cancel-btn {
+        min-width: 100%;
+    }
+    
+    .image-upload-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 1.1em;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .form-input,
+    .form-select {
+        padding: 10px 12px;
+        font-size: 0.95em;
+    }
+}
+
+/* Dark Mode Support */
+body.dark-mode .form-container {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .form-section {
+    border-bottom-color: #404040;
+}
+
+body.dark-mode .producto-header h1,
+body.dark-mode .section-title,
+body.dark-mode .form-label {
+    color: #ffffff;
+}
+
+body.dark-mode .producto-header p {
+    color: #cccccc;
+}
+
+body.dark-mode .form-input,
+body.dark-mode .form-select {
+    background: #444444;
+    color: #ffffff;
+    border-color: #555555;
+}
+
+body.dark-mode .form-input:focus,
+body.dark-mode .form-select:focus {
+    border-color: #1ec6b6;
+}
+
+body.dark-mode .caracteristica-item {
+    background: #333333;
+    border-color: #1ec6b6;
+}
+
+body.dark-mode .exchange-rate-info {
+    background: #333333;
+    border-color: #404040;
+    color: #cccccc;
+}
+
+body.dark-mode .form-actions {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+}
+
+body.dark-mode .price-input-group {
+    border: 2px solid #e0e0e0;
+    background: #333333;
+}
+body.dark-mode .price-input-group #precio_dolar,
+body.dark-mode .price-input-group #precio_bs {
+    border: none !important;
+}
+</style>
 <!--
     Se asegura que los labels y textos tengan contraste en modo oscuro usando las clases y estilos globales.
     No se requieren cambios directos aquí, ya que los estilos CSS globales lo controlan.
@@ -103,67 +768,127 @@
         const list = document.getElementById('caracteristicas-list');
         const idx = list.querySelectorAll('.caracteristica-item').length + 1;
         const div = document.createElement('div');
-        div.className = 'form-group caracteristica-item';
-        div.innerHTML = `<div style="display:flex; gap:8px; width:100%;">
-                            <input type="text" name="car_nombre_${idx}" placeholder="Nombre">
-                            <input type="text" name="car_valor_${idx}" placeholder="Valor">
-                        </div>`;
+        div.className = 'caracteristica-item';
+        div.style.opacity = '0';
+        div.style.transform = 'translateY(-10px)';
+        div.innerHTML = `
+            <div class="caracteristica-inputs">
+                <input type="text" name="car_nombre_${idx}" class="form-input char-input" placeholder="Nombre">
+                <input type="text" name="car_valor_${idx}" class="form-input char-input" placeholder="Valor">
+            </div>
+        `;
         list.appendChild(div);
+        
+        // Animación de entrada
+        setTimeout(() => {
+            div.style.transition = 'all 0.3s ease';
+            div.style.opacity = '1';
+            div.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Focus en el primer input
+        const firstInput = div.querySelector('.char-input');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
     }
 
     // Imagen preview y modal
     const imagenInput = document.getElementById('imagen-input');
     const imagenPreview = document.getElementById('imagen-preview');
     const fileNameSpan = document.getElementById('file-name');
+    
     imagenInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             fileNameSpan.textContent = file.name;
+            fileNameSpan.style.color = '#1ec6b6';
+            fileNameSpan.style.fontWeight = '600';
+            
             const reader = new FileReader();
             reader.onload = function(ev) {
                 imagenPreview.src = ev.target.result;
                 imagenPreview.style.display = 'block';
+                
+                // Animación de aparición
+                imagenPreview.style.opacity = '0';
+                imagenPreview.style.transform = 'scale(0.8)';
+                setTimeout(() => {
+                    imagenPreview.style.transition = 'all 0.3s ease';
+                    imagenPreview.style.opacity = '1';
+                    imagenPreview.style.transform = 'scale(1)';
+                }, 10);
             }
             reader.readAsDataURL(file);
         } else {
             fileNameSpan.textContent = 'Ningún archivo seleccionado';
+            fileNameSpan.style.color = '#666';
+            fileNameSpan.style.fontWeight = 'normal';
             imagenPreview.src = '#';
             imagenPreview.style.display = 'none';
         }
     });
+    
     function mostrarImagenGrande() {
         if (!imagenPreview.src || imagenPreview.src === '#') return;
+        
         const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = 0;
-        modal.style.left = 0;
-        modal.style.width = '100vw';
-        modal.style.height = '100vh';
-        modal.style.background = 'rgba(0,0,0,0.7)';
-        modal.style.display = 'flex';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        modal.style.zIndex = 9999;
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+        
         const img = document.createElement('img');
         img.src = imagenPreview.src;
-        img.style.maxWidth = '90vw';
-        img.style.maxHeight = '90vh';
-        img.style.borderRadius = '10px';
-        img.style.boxShadow = '0 0 20px #0008';
+        img.style.cssText = `
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        `;
+        
         modal.appendChild(img);
-        modal.onclick = function() { document.body.removeChild(modal); };
         document.body.appendChild(modal);
+        
+        // Animaciones
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            img.style.transform = 'scale(1)';
+        }, 10);
+        
+        modal.onclick = function() {
+            modal.style.opacity = '0';
+            img.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                document.body.removeChild(modal);
+            }, 300);
+        };
     }
 
     // Conversión automática de precios
     let tasaCambio = 100; // Valor por defecto
+    
+    // Obtener tasa de cambio
     fetch('/tasa_cambio')
       .then(res => res.json())
       .then(data => {
         if (data.oficial.promedio) {
           tasaCambio = data.oficial.promedio;
           document.getElementById('tasa-actual').textContent = tasaCambio;
-          // Mostrar fecha si viene en la respuesta, si no, usar hoy
+          
           let fecha = data.oficial.fecha;
           if (fecha) {
             const hoy = new Date(fecha);
@@ -179,21 +904,41 @@
         document.getElementById('tasa-actual').textContent = 'No disponible';
         document.getElementById('tasa-fecha').textContent = '';
       });
+    
     function convertirPrecio(origen) {
         const inputUsd = document.getElementById('precio_dolar');
         const inputBs = document.getElementById('precio_bs');
+        
         if (origen === 'usd' && inputUsd.value) {
             inputBs.value = (parseFloat(inputUsd.value) * tasaCambio).toFixed(2);
         } else if (origen === 'bs' && inputBs.value) {
             inputUsd.value = (parseFloat(inputBs.value) / tasaCambio).toFixed(2);
         }
     }
+    
     function eliminarImagenActual() {
         const imagenPreview = document.getElementById('imagen-preview');
         imagenPreview.src = '#';
         imagenPreview.style.display = 'none';
         document.getElementById('file-name').textContent = 'Ningún archivo seleccionado';
+        document.getElementById('file-name').style.color = '#666';
+        document.getElementById('file-name').style.fontWeight = 'normal';
         document.getElementById('eliminar-imagen').value = '1';
     }
+    
+    // Animaciones de entrada al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.form-section');
+        sections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                section.style.transition = 'all 0.5s ease';
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
     </script>
 {% endblock %}
