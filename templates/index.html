@@ -1,225 +1,194 @@
 {% extends 'layout.html' %}
 
-
 {% block title %}
-    StockTaking App
+    StockTaking App | Gestión Inteligente de Inventarios
 {% endblock %}
 
-
 {% block main %}
-<style>
-.landing-hero {
-    background: linear-gradient(120deg, #e0f7fa 0%, #bdffff 100%);
-    border-radius: 18px;
-    box-shadow: 0 4px 32px #0e5e5a18;
-    padding: 48px 32px 36px 32px;
-    margin-top: 100px;
-    margin-bottom: 36px;
-    max-width: 72.5%;
-    position: relative;
-    z-index: 1;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
-.landing-hero img {
-    animation: floatLogo 2.5s ease-in-out infinite alternate;
-}
-@keyframes floatLogo {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-12px); }
-}
-.landing-hero h1 {
-    font-size: 2.7em;
-    color: #0e5e5a;
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-}
-.landing-hero p {
-    font-size: 1.22em;
-    color: #444;
-    margin-bottom: 28px;
-    line-height: 1.5;
-}
-.landing-hero .button {
-    border-radius: 22px;
-    border: none;
-    background: #0e5e5a;
-    color: #fff;
-    font-weight: 600;
-    margin: 0 6px 0 0;
-    box-shadow: 0 2px 8px #0e5e5a22;
-    transition: background 0.2s, transform 0.2s;
-}
-.landing-hero .button:hover {
-    background: #1ec6b6;
-    color: #fff;
-    transform: translateY(-2px) scale(1.04);
-}
-.landing-hero .button:last-child {
-    background: #1ec6b6;
-    color: #fff;
-}
-.landing-hero .button:last-child:hover {
-    background: #0e5e5a;
-}
-.features-section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 32px;
-    margin: 40px 0 0 0;
-    z-index: 1;
-    position: relative;
-}
-.feature-card {
-    background: #fff;
-    border-radius: 14px;
-    padding: 32px 22px 28px 22px;
-    max-width: 320px;
-    min-width: 240px;
-    box-shadow: 0 2px 16px #0e5e5a13;
-    text-align: center;
-    transition: transform 0.18s, box-shadow 0.18s;
-    border: 1.5px solid #e0f7fa;
-    position: relative;
-    overflow: hidden;
-}
-.feature-card:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 8px 32px #1ec6b633;
-    border-color: #1ec6b6;
-}
-.feature-card img {
-    width: 44px;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 2px 6px #1ec6b622);
-}
-.feature-card h3 {
-    color: #0e5e5a;
-    font-size: 1.18em;
-    margin-bottom: 10px;
-    font-weight: 700;
-}
-.feature-card p {
-    color: #444;
-    font-size: 1.04em;
-    line-height: 1.5;
-}
-.cta-section {
-    text-align: center;
-    margin: 70px 0 0 0;
-    padding: 38px 0 30px 0;
-    background: linear-gradient(120deg, #0e5e5a 0%, #01776b 100%);
-    border-top-left-radius: 18px;
-    border-top-right-radius: 18px;
-    color: #fff;
-}
-.cta-section h2 {
-    color: #fff;
-    font-size: 2em;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-}
-.cta-section p {
-    color: #e0f7fa;
-    font-size: 1.08em;
-}
-.cta-section a {
-    color: #fff;
-    text-decoration: underline;
-    font-weight: 600;
-    transition: color 0.2s;
-}
-.cta-section a:hover {
-    color: #ffe082;
-}
-@media (max-width: 900px) {
-    .features-section {
-        flex-direction: column;
-        align-items: center;
-        gap: 22px;
-    }
-    .landing-hero {
-        padding: 32px 10px 24px 10px;
-    }
-}
-</style>
 <div class="landing-hero">
-    <img src="/static/sale.svg" alt="StockTaking Logo">
+    <div class="hero-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+        </svg>
+    </div>
     <h1>StockTaking App</h1>
-    <p>
-        La solución moderna y sencilla para gestionar inventarios, ventas y productos en tu negocio.<br>
-        Controla tu stock, automatiza tareas y toma decisiones inteligentes desde cualquier lugar.
+    <p class="subtitle">
+        La solución moderna y profesional<br>
+        para gestionar inventarios, ventas y productos.<br>
+        Controla tu stock en tiempo real, automatiza procesos<br>
+        y toma decisiones inteligentes desde cualquier dispositivo.
     </p>
-    <a href="{{ url_for('auth.login') }}" class="button" style="padding:12px 32px; font-size:1.1em; margin-bottom:10px;">Iniciar sesión</a>
-    <a href="{{ url_for('auth.register') }}" class="button" style="padding:12px 32px; font-size:1.1em; margin-left:10px;">Crear cuenta</a>
+    <div class="cta-buttons">
+        <a href="{{ url_for('auth.login') }}" class="cta-btn primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10,17 15,12 10,7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Iniciar Sesión
+        </a>
+        <a href="{{ url_for('auth.register') }}" class="cta-btn secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            Crear Cuenta
+        </a>
+    </div>
 </div>
 
 <div class="features-section">
-    <div class="feature-card">
-        <img src="/static/settings.svg" alt="Gestión de inventario">
-        <h3>Gestión de Inventario</h3>
-        <p>Agrega, edita y organiza productos, categorías y stock en tiempo real. Visualiza tu inventario de forma clara y personalizable.</p>
+    <div class="features-header">
+        <h2>Características Principales</h2>
+        <p>Descubre todas las herramientas que StockTaking App pone a tu disposición para revolucionar la gestión de tu negocio</p>
     </div>
-    <div class="feature-card">
-        <img src="/static/sale.svg" alt="Ventas rápidas">
-        <h3>Ventas Rápidas y Seguras</h3>
-        <p>Registra ventas fácilmente, consulta historial y obtén reportes automáticos. Controla precios en dólares y bolívares.</p>
+    
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="7.5,12.5 10.5,15.5 16.5,9.5"/>
+                </svg>
+            </div>
+            <h3>Gestión Inteligente de Inventario</h3>
+            <p>Administra productos, categorías y stock con facilidad. Visualización en tiempo real, alertas automáticas de stock bajo y organización personalizable según tus necesidades.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 12l2 2 4-4"/>
+                    <path d="M3 12h1m16 0h1M12 3v1m0 16v1m-9-9v1m16 0v1"/>
+                </svg>
+            </div>
+            <h3>Ventas Rápidas y Seguras</h3>
+            <p>Procesa ventas de manera eficiente con nuestro sistema optimizado. Historial completo, reportes automáticos y control total de transacciones en múltiples monedas.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    <path d="M9 9v6"/>
+                    <path d="M15 9v6"/>
+                </svg>
+            </div>
+            <h3>Tasa de Cambio Dinámica</h3>
+            <p>Actualización automática de precios según tasas oficiales o paralelas. Mantén tus productos siempre competitivos con conversiones precisas y actualizadas.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </div>
+            <h3>Personalización Completa</h3>
+            <p>Adapta la aplicación a tu negocio específico. Configura columnas, categorías personalizadas, campos adicionales y flujos de trabajo únicos para tu empresa.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18"/>
+                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                </svg>
+            </div>
+            <h3>Análisis y Reportes</h3>
+            <p>Obtén insights valiosos sobre tu negocio con reportes detallados, gráficos interactivos y métricas clave que te ayuden a tomar decisiones estratégicas informadas.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <h3>Multi-Usuario y Roles</h3>
+            <p>Gestiona tu equipo con sistema de roles y permisos. Cada usuario accede solo a las funciones necesarias, manteniendo la seguridad y organización de tu negocio.</p>
+        </div>
     </div>
-    <div class="feature-card">
-        <img src="/static/dollar.svg" alt="Tasa de cambio">
-        <h3>Tasa de Cambio Actualizada</h3>
-        <p>Actualiza precios automáticamente según la tasa oficial o paralela. Mantén tus productos siempre al día.</p>
-    </div>
-    <div class="feature-card">
-        <img src="static\widgetsmith.svg" alt="Personalización">
-        <h3>Personalización Total</h3>
-        <p>Configura columnas, categorías y campos personalizados para adaptar la app a tu negocio.</p>
+</div>
+
+<div class="stats-section">
+    <h2>StockTaking App en Números</h2>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-number">99.9%</div>
+            <div class="stat-label">Tiempo de Actividad</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">24/7</div>
+            <div class="stat-label">Disponibilidad</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Seguridad de Datos</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">0€</div>
+            <div class="stat-label">Costo Inicial</div>
+        </div>
     </div>
 </div>
 
 <div class="cta-section">
-    <h2>¡Empieza a optimizar tu inventario hoy!</h2>
-    <p>StockTaking App es gratis para pequeños negocios. <br>¿Tienes dudas? <a href="https://www.instagram.com/cmoinr/">Contáctanos</a></p>
+    <h2>¡Transforma tu Negocio Hoy!</h2>
+    <p>
+        Únete a miles de empresarios que ya optimizan su inventario con StockTaking App.<br>
+        Comienza gratis y descubre el poder de la gestión inteligente.<br><br>
+        ¿Tienes preguntas? <a href="https://www.instagram.com/cmoinr/">Contáctanos directamente</a>
+    </p>
 </div>
 {% endblock %}
 
-
 {% block scripts %}
-    <script>
-    // Selector horizontal de tasa
-    const tasaBtns = document.querySelectorAll('.section-selector .filtro-btn');
-    const tasaHidden = document.getElementById('tasa-hidden');
-    tasaBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-        tasaBtns.forEach(b => b.classList.remove('active'));
-        this.classList.add('active');
-        tasaHidden.value = this.getAttribute('data-tasa');
+<script>
+// Smooth scrolling for better UX
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
     });
-    });
+});
 
-    function mostrarImagenGrandeTabla(imgElem) {
-        const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = 0;
-        modal.style.left = 0;
-        modal.style.width = '100vw';
-        modal.style.height = '100vh';
-        modal.style.background = 'rgba(0,0,0,0.7)';
-        modal.style.display = 'flex';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
-        modal.style.zIndex = 9999;
-        const img = document.createElement('img');
-        img.src = imgElem.src;
-        img.style.maxWidth = '90vw';
-        img.style.maxHeight = '90vh';
-        img.style.borderRadius = '10px';
-        img.style.boxShadow = '0 0 20px #0008';
-        modal.appendChild(img);
-        modal.onclick = function() { document.body.removeChild(modal); };
-        document.body.appendChild(modal);
-    }
-    </script>
+// Add intersection observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+// Animate feature cards on scroll
+document.addEventListener('DOMContentLoaded', () => {
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(card);
+    });
+});
+</script>
 {% endblock %}

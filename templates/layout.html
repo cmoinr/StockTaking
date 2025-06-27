@@ -6,44 +6,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index_style.css') }}">
     {% block head_extra %}{% endblock %}
 </head>
-<body id="public_body">
-    <nav class="navbar">
-        <div class="navbar-title">
-            <a href="{{ url_for('index') }}" class="main-title">StockTaking</a>
-            <span class="subtitle">app</span>
-        </div>
-    </nav>
-
+<body>
 {% block main %}{% endblock %}
 
-<style>
-#public_body {
-    font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(120deg, #78efff 0%, #17adad 100%);
-    margin: 0;
-    padding: 0;
-}
-.subtitle {
-    font-size: 0.95em;
-    color: #0e5e5a;
-    font-weight: 700;
-    margin-left: 8px;
-}
-.main-title {
-    font-family: 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif !important;
-    font-size: 1.90em;
-    font-weight: 900;
-    color: #0e5e5a;
-    letter-spacing: 1.5px;
-    text-decoration: none;
-    text-shadow: none;
-}
-</style>
-
 {% block scripts %}{% endblock %}
-
 </body>
 </html>
