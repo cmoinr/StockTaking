@@ -1,59 +1,504 @@
 {% extends 'inventario_layout.html' %}
 
-
 {% block title %}
     Categorías | StockTaking App
 {% endblock %}
 
-
 {% block main %}
-    <h1>Categorías</h1>
-    <form action="{{ url_for('categorias') }}" method="post" id="form-categorias">
-        <table>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th></th>
-            </tr>
-            {% if categorias|length == 0 %}
-                <tr>
-                    <td colspan="7" style="text-align:center; color:#888; font-style:italic;">No hay categorias actualmente.</td>
-                </tr>
-            {% else %}            
-                {% for c in categorias %}
-                <tr>
-                    <td><input type="text" name="nombre_{{ c._id }}" value="{{ c['nombre'] }}" required></td>
-                    <td class="descripcion-col"><input type="text" name="descripcion_{{ c._id }}" value="{{ c['descripcion'] }}"></td>
-                    <td style="text-align:center;">
-                        <button type="button" class="delete-btn" onclick="eliminarCategoria('{{ c._id }}')" title="Eliminar">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                        </button>
-                        <input type="hidden" name="eliminar_{{ c._id }}" id="eliminar_{{ c._id }}" value="0">
-                    </td>
-                </tr>
-                {% endfor %}
-            {% endif %}
-            <!-- Fila para nueva categoría -->
-            <tr>
-                <td><input type="text" name="nombre_nueva" placeholder="Nueva categoría"></td>
-                <td><input type="text" name="descripcion_nueva" placeholder="Descripción"></td>
-                <td></td>
-            </tr>
-        </table>
-        <div style="text-align:center; margin: 24px 0 12px 0;">
-            <button type="submit" class="button">Guardar cambios</button>
+    <div class="categorias-container">
+        <div class="categorias-header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <rect x="7" y="8" width="10" height="8" rx="1"/>
+                </svg>
+                Gestión de Categorías
+            </h1>
+            <p>Administra las categorías de productos de tu inventario</p>
         </div>
-    </form>
-{% endblock %}
 
+        <div class="categorias-content">
+            <form action="{{ url_for('categorias') }}" method="post" id="form-categorias" class="categorias-form">
+                <div class="table-container">
+                    <table class="categorias-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                        <circle cx="12" cy="7" r="4"/>
+                                    </svg>
+                                    Nombre
+                                </th>
+                                <th>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                        <polyline points="14,2 14,8 20,8"/>
+                                        <line x1="16" y1="13" x2="8" y2="13"/>
+                                        <line x1="16" y1="17" x2="8" y2="17"/>
+                                        <polyline points="10,9 9,9 8,9"/>
+                                    </svg>
+                                    Descripción
+                                </th>
+                                <th>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                                    </svg>
+                                    Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if categorias|length == 0 %}
+                                <tr class="no-data-row">
+                                    <td colspan="3">
+                                        <div class="no-data-message">
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                                <circle cx="12" cy="12" r="1"/>
+                                            </svg>
+                                            <p>No hay categorías registradas actualmente</p>
+                                            <small>Agrega una nueva categoría usando el formulario inferior</small>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}            
+                                {% for c in categorias %}
+                                <tr class="categoria-row">
+                                    <td class="nombre-cell">
+                                        <input type="text" name="nombre_{{ c._id }}" value="{{ c['nombre'] }}" class="nombre-input" required>
+                                    </td>
+                                    <td class="descripcion-cell">
+                                        <input type="text" name="descripcion_{{ c._id }}" value="{{ c['descripcion'] }}" class="descripcion-input">
+                                    </td>
+                                    <td class="acciones-cell">
+                                        <button type="button" class="delete-btn" onclick="eliminarCategoria('{{ c._id }}')" title="Eliminar categoría">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+                                                <line x1="10" y1="11" x2="10" y2="17"/>
+                                                <line x1="14" y1="11" x2="14" y2="17"/>
+                                            </svg>
+                                        </button>
+                                        <input type="hidden" name="eliminar_{{ c._id }}" id="eliminar_{{ c._id }}" value="0">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% endif %}
+                            <!-- Fila para nueva categoría -->
+                            <tr class="nueva-categoria-row">
+                                <td class="nombre-cell">
+                                    <input type="text" name="nombre_nueva" placeholder="Nombre (nueva categoría)" class="nueva-categoria-input">
+                                </td>
+                                <td class="descripcion-cell">
+                                    <input type="text" name="descripcion_nueva" placeholder="Descripción (opcional)" class="nueva-categoria-input">
+                                </td>
+                                <td class="acciones-cell">
+                                    <div class="nueva-indicator">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="5" x2="12" y2="19"/>
+                                            <line x1="5" y1="12" x2="19" y2="12"/>
+                                        </svg>
+                                        Nueva
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="guardar-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17,21 17,13 7,13 7,21"/>
+                            <polyline points="7,3 7,8 15,8"/>
+                        </svg>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<style>
+/* Container Principal */
+.categorias-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.categorias-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.categorias-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2em;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.categorias-header h1 svg {
+    color: #1ec6b6;
+}
+
+.categorias-header p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* Content */
+.categorias-content {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(14, 94, 90, 0.08);
+    border: 2px solid #e6fcfa;
+    overflow: hidden;
+}
+
+/* Table Container */
+.table-container {
+    overflow-x: auto;
+    border-radius: 15px;
+}
+
+.categorias-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+.categorias-table thead th {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    padding: 18px 20px;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.categorias-table thead th svg {
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.categorias-table tbody td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #17a2b8;
+    vertical-align: middle;
+}
+
+.categoria-row:hover {
+    background: #f8fffe;
+}
+
+.nueva-categoria-row {
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    border-top: 2px solid #1ec6b6;
+}
+
+.nueva-categoria-row:hover {
+    background: linear-gradient(135deg, #f0fffe 0%, #e6fcfa 100%);
+}
+
+/* Inputs */
+.nombre-input,
+.descripcion-input,
+.nueva-categoria-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: #f9f9f9;
+    box-sizing: border-box;
+}
+
+.nombre-input:focus,
+.descripcion-input:focus,
+.nueva-categoria-input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 198, 182, 0.15);
+}
+
+.nueva-categoria-input {
+    border-color: #1ec6b6;
+    background: #ffffff;
+}
+
+.nueva-categoria-input::placeholder {
+    color: #1ec6b6;
+    font-style: italic;
+}
+
+/* No Data Message */
+.no-data-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-data-message svg {
+    color: #1ec6b6;
+    margin-bottom: 20px;
+}
+
+.no-data-message p {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: #0e5e5a;
+}
+
+.no-data-message small {
+    color: #999;
+    font-size: 0.9em;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+}
+
+.delete-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, #c82333, #dc3545);
+}
+
+.delete-btn svg {
+    stroke: white;
+}
+
+/* Nueva Indicator */
+.nueva-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #1ec6b6;
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.nueva-indicator svg {
+    color: #1ec6b6;
+}
+
+/* Form Actions */
+.form-actions {
+    padding: 25px 30px;
+    text-align: center;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    border-top: 2px solid #e6fcfa;
+}
+
+.guardar-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    justify-content: center;
+}
+
+.guardar-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .categorias-container {
+        padding: 15px;
+    }
+    
+    .categorias-header h1 {
+        font-size: 1.8em;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .categorias-table thead th,
+    .categorias-table tbody td {
+        padding: 12px 15px;
+    }
+    
+    .form-actions {
+        padding: 20px 15px;
+    }
+    
+    .guardar-btn {
+        width: 100%;
+        padding: 12px 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .categorias-table thead th,
+    .categorias-table tbody td {
+        padding: 10px 12px;
+        font-size: 0.9em;
+    }
+    
+    .nombre-input,
+    .descripcion-input,
+    .nueva-categoria-input {
+        padding: 8px 12px;
+        font-size: 0.95em;
+    }
+    
+    .delete-btn {
+        padding: 6px 10px;
+    }
+    
+    .delete-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* Dark Mode Support */
+body.dark-mode .categorias-content {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .categorias-header h1 {
+    color: #ffffff;
+}
+
+body.dark-mode .categorias-header p {
+    color: #cccccc;
+}
+
+body.dark-mode .categorias-table {
+    background: #2a2a2a;
+}
+
+body.dark-mode .categorias-table tbody td {
+    border-bottom: 1px solid #5f5f5f;
+}
+
+body.dark-mode .categoria-row:hover {
+    background: #333333;
+}
+
+body.dark-mode .nueva-categoria-row {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-top-color: #404040;
+}
+
+body.dark-mode .nueva-categoria-row:hover {
+    background: linear-gradient(135deg, #3a3a3a 0%, #404040 100%);
+}
+
+body.dark-mode .nombre-input,
+body.dark-mode .descripcion-input,
+body.dark-mode .nueva-categoria-input {
+    background: #333333;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .nombre-input:focus,
+body.dark-mode .descripcion-input:focus,
+body.dark-mode .nueva-categoria-input:focus {
+    background: #444444;
+}
+
+body.dark-mode .no-data-message p {
+    color: #ffffff;
+}
+
+body.dark-mode .no-data-message {
+    color: #cccccc;
+}
+
+body.dark-mode .form-actions {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-top-color: #404040;
+}
+</style>
+{% endblock %}
 
 {% block scripts %}
     <script>
     function eliminarCategoria(id) {
-        if (confirm('¿Eliminar esta categoría?')) {
+        if (confirm('¿Estás seguro de que deseas eliminar esta categoría?')) {
             document.getElementById('eliminar_' + id).value = '1';
             document.getElementById('form-categorias').submit();
         }
     }
+
+    // Animaciones de entrada al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.categoria-row, .nueva-categoria-row');
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                row.style.transition = 'all 0.3s ease';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+
+    // Validación de formulario
+    document.getElementById('form-categorias').addEventListener('submit', function(e) {
+        const nombreInputs = document.querySelectorAll('input[name^="nombre_"]:not([name="nombre_nueva"])');
+        let hasError = false;
+        
+        nombreInputs.forEach(input => {
+            if (input.value.trim() === '') {
+                input.style.borderColor = '#dc3545';
+                hasError = true;
+            } else {
+                input.style.borderColor = '#e0e0e0';
+            }
+        });
+        
+        if (hasError) {
+            e.preventDefault();
+            alert('Por favor, completa todos los campos de nombre requeridos.');
+        }
+    });
     </script>
 {% endblock %}

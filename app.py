@@ -239,6 +239,7 @@ def categorias():
             eliminar = request.form.get(f'eliminar_{cid}')
             if eliminar == '1':
                 collection.delete_one({'_id': ObjectId(cid), 'user_id': ObjectId(session['user_id'])})
+                flash(f'Categoría "{c["nombre"]}" eliminada.', 'success')
             else:
                 if nombre is not None:
                     collection.update_one(
@@ -252,6 +253,7 @@ def categorias():
             data = {'nombre': nombre_nueva, 'descripcion': descripcion_nueva or '', 'user_id': ObjectId(session['user_id'])}
             if validate_category(data):
                 collection.insert_one(data)
+                flash(f'Categoría "{nombre_nueva}" creada.', 'success')
         return redirect(url_for('categorias'))
     # GET: mostrar categorías
     categorias = list(collection.find({'user_id': ObjectId(session['user_id'])}))
@@ -443,6 +445,5 @@ def user_home():
     user_id = session.get('user_id')
     users_col = app.db['users']
     user_doc = users_col.find_one({'_id': ObjectId(user_id)})
-    print(user_doc)
     return render_template('user_home.html', current_user=user_doc)
     

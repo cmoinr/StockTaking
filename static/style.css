@@ -57,9 +57,6 @@ body.dark-mode a.button:hover, body.dark-mode button:hover {
     background: #1ec6b6;
     color: #fff;
 }
-form {
-    margin-bottom: 18px;
-}
 /* Estilos generales de inputs comentados para evitar conflictos con vistas de producto */
 /*
 input[type="text"], input[type="number"], select, textarea {
@@ -97,12 +94,12 @@ button:hover {
     color: #fff;
 }
 */
-table {
+/* table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 18px;
     background: #fafbfc;
-}
+} */
 body.dark-mode table {
     background: #23272b;
 }

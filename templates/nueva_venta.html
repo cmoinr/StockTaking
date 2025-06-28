@@ -1,157 +1,596 @@
 {% extends 'ventas_layout.html' %}
 
-
 {% block title %}
     Nueva Venta | StockTaking App
 {% endblock %}
 
-
 {% block main %}
+    <div class="nueva-venta-container">
+        <div class="venta-header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                Nueva Venta
+            </h1>
+            <p>Registra una nueva venta en el sistema</p>
+        </div>
+
+        <div class="venta-content">
+            <form method="post" class="venta-form">
+                <!-- Sección de productos -->
+                <div class="productos-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                        <span>Seleccionar Productos</span>
+                    </div>
+                    
+                    <div class="productos-table-container">
+                        <table class="productos-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Stock</th>
+                                    <th>Precio ($)</th>
+                                    <th>Cantidad</th>
+                                    <th>Subtotal</th>
+                                    <th>Agregar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in productos %}
+                                <tr class="producto-row">
+                                    <td class="producto-nombre">{{ p.nombre }}</td>
+                                    <td class="stock-value">{{ p.stock }}</td>
+                                    <td class="precio-value">${{ '%.2f' % p['precio']['$'] if 'precio' in p and '$' in p['precio'] else '0.00' }}</td>
+                                    <td class="cantidad-cell">
+                                        <input type="number" name="cantidad_{{ p._id }}" min="0" max="{{ p.stock }}" value="0" class="cantidad-input">
+                                    </td>
+                                    <td class="subtotal-value" id="subtotal_{{ p._id }}">$0.00</td>
+                                    <td class="agregar-cell">
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" name="agregar_{{ p._id }}">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sección de información del cliente -->
+                <div class="cliente-section">
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>Información del Cliente (Opcional)</span>
+                    </div>
+                    
+                    <div class="cliente-form">
+                        <div class="form-group">
+                            <label for="cliente_nombre">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="7" r="4"/>
+                                    <path d="M12 14s8 0 8 6v1H4v-1c0-6 8-6 8-6"/>
+                                </svg>
+                                Nombre del Cliente
+                            </label>
+                            <input type="text" name="cliente_nombre" placeholder="Nombre completo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente_telefono">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                                Teléfono
+                            </label>
+                            <input type="text" name="cliente_telefono" placeholder="Número de teléfono">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cliente_email">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                Correo Electrónico
+                            </label>
+                            <input type="email" name="cliente_email" placeholder="correo@ejemplo.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="metodo_pago">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                Método de Pago
+                            </label>
+                            <input type="text" name="metodo_pago" placeholder="Efectivo, Transferencia, Tarjeta, etc.">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de total y envío -->
+                <div class="total-section">
+                    <div class="total-display">
+                        <div class="total-label">Total de la Venta:</div>
+                        <div class="total-value">$<span id="total_venta">0.00</span></div>
+                    </div>
+                    
+                    <input type="hidden" name="total" id="total_hidden" value="0.00">
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="registrar-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M7 10l5 5 5-5"/>
+                                <path d="M12 15V3"/>
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            </svg>
+                            Registrar Venta
+                        </button>
+                        
+                        <a href="{{ url_for('ventas.listar_ventas') }}" class="ver-ventas-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Ver Ventas Registradas
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 <style>
+/* Container Principal */
 .nueva-venta-container {
-    max-width: 480px;
-    margin: 60px auto 0 auto;
-    background: var(--form-bg, #fff);
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(30,198,182,0.10);
-    padding: 2.5rem 2rem 2rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: background 0.3s;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.nueva-venta-container h2 {
-    margin-bottom: 1.5rem;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
+
+/* Header */
+.venta-header {
     text-align: center;
+    margin-bottom: 40px;
 }
-.nueva-venta-container form {
-    width: 100%;
+
+.venta-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2em;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.venta-header h1 svg {
+    color: #1ec6b6;
+}
+
+.venta-header p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+/* Content */
+.venta-content {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 30px;
 }
-.nueva-venta-container label {
-    align-self: flex-start;
-    margin-bottom: 0.3rem;
-    margin-top: 1rem;
+
+/* Sections */
+.productos-section,
+.cliente-section,
+.total-section {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(14, 94, 90, 0.08);
+    border: 2px solid #e6fcfa;
+    overflow: hidden;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
     font-weight: 600;
-    color: var(--label-color, #222);
+    color: #0e5e5a;
+    margin-bottom: 25px;
+    padding: 25px 30px 0 30px;
+    border-bottom: 2px solid #e6fcfa;
+    padding-bottom: 15px;
 }
-.nueva-venta-container input[type="text"],
-.nueva-venta-container input[type="number"],
-.nueva-venta-container input[type="email"] {
+
+.section-title svg {
+    color: #1ec6b6;
+}
+
+/* Tabla de productos */
+.productos-table-container {
+    padding: 0 30px 30px 30px;
+    overflow-x: auto;
+}
+
+.productos-table {
     width: 100%;
-    padding: 0.7rem 1rem;
-    border: 1px solid #bbb;
-    border-radius: 8px;
-    margin-bottom: 0.7rem;
-    font-size: 1rem;
-    background: var(--input-bg, #f9f9f9);
-    color: var(--input-color, #222);
-    transition: background 0.3s, color 0.3s;
-}
-.nueva-venta-container button {
-    width: 70%;
-    margin-top: 1.2rem;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 8px;
-    background: #1ec6b6;
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(30,198,182,0.08);
-    transition: background 0.2s;
-}
-.nueva-venta-container button:hover {
-    background: #159e92;
-}
-.nueva-venta-container table {
-    width: 100%;
-    margin-bottom: 1.2rem;
     border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(14, 94, 90, 0.05);
 }
-.nueva-venta-container th, .nueva-venta-container td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
+
+.productos-table thead th {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    border: none;
 }
-.nueva-venta-container th {
-    background: #e6fcfa;
+
+.productos-table tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.producto-row:hover {
+    background: #f8fffe;
+}
+
+.producto-nombre {
+    font-weight: 600;
     color: #0e5e5a;
 }
-.nueva-venta-container .acciones {
+
+.stock-value,
+.precio-value,
+.subtotal-value {
+    font-weight: 500;
+    text-align: center;
+}
+
+.cantidad-input {
+    width: 70px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    background: #f9f9f9;
+}
+
+.cantidad-input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 198, 182, 0.15);
+}
+
+/* Checkbox personalizado */
+.checkbox-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: #f9f9f9;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-container input:checked ~ .checkmark {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    border-color: #1ec6b6;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 7px;
+    top: 3px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Formulario de cliente */
+.cliente-section {
+    padding: 25px 30px 30px 30px;
+}
+
+.cliente-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
     display: flex;
-    gap: 0.5em;
+    flex-direction: column;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+}
+
+.form-group label svg {
+    color: #1ec6b6;
+}
+
+.form-group input {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: #f9f9f9;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1ec6b6;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(30, 198, 182, 0.15);
+}
+
+/* Sección de total */
+.total-section {
+    padding: 25px 30px 30px 30px;
+    text-align: center;
+}
+
+.total-display {
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    border: 2px solid #e6fcfa;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.total-label {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.total-value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #0e5e5a;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.registrar-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 40px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    min-width: 200px;
     justify-content: center;
 }
-body.dark-mode .nueva-venta-container {
-    --form-bg: #23272f;
-    --label-color: #e0e0e0;
-    --input-bg: #23272f;
-    --input-color: #f3f3f3;
-    background: var(--form-bg);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.30);
+
+.registrar-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
 }
-body.dark-mode .nueva-venta-container label {
-    color: var(--label-color);
+
+.ver-ventas-btn {
+    background: linear-gradient(135deg, #17a2b8, #1ec6b6);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 1em;
 }
-body.dark-mode .nueva-venta-container input[type="text"],
-body.dark-mode .nueva-venta-container input[type="number"],
-body.dark-mode .nueva-venta-container input[type="email"] {
-    background: var(--input-bg);
-    color: var(--input-color);
-    border: 1px solid #444;
+
+.ver-ventas-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nueva-venta-container {
+        padding: 15px;
+    }
+    
+    .venta-header h1 {
+        font-size: 1.8em;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1em;
+        padding: 20px 15px 0 15px;
+    }
+    
+    .productos-table-container,
+    .cliente-section {
+        padding: 0 15px 20px 15px;
+    }
+    
+    .cliente-form {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .form-actions {
+        gap: 12px;
+    }
+    
+    .registrar-btn,
+    .ver-ventas-btn {
+        width: 100%;
+    }
+    
+    .total-value {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .productos-table-container {
+        padding: 0 10px 15px 10px;
+    }
+    
+    .productos-table thead th,
+    .productos-table tbody td {
+        padding: 8px 6px;
+        font-size: 0.9em;
+    }
+    
+    .cantidad-input {
+        width: 60px;
+        padding: 6px 8px;
+    }
+}
+
+/* Dark Mode Support */
+body.dark-mode .productos-section,
+body.dark-mode .cliente-section,
+body.dark-mode .total-section {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .venta-header h1,
+body.dark-mode .section-title {
+    color: #ffffff;
+}
+
+body.dark-mode .venta-header p {
+    color: #cccccc;
+}
+
+body.dark-mode .productos-table {
+    background: #2a2a2a;
+}
+
+body.dark-mode .producto-row:hover {
+    background: #333333;
+}
+
+body.dark-mode .producto-nombre {
+    color: #ffffff;
+}
+
+body.dark-mode .cantidad-input,
+body.dark-mode .form-group input {
+    background: #333333;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+body.dark-mode .cantidad-input:focus,
+body.dark-mode .form-group input:focus {
+    background: #444444;
+}
+
+body.dark-mode .form-group label {
+    color: #ffffff;
+}
+
+body.dark-mode .total-display {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-color: #404040;
+}
+
+body.dark-mode .total-label {
+    color: #cccccc;
+}
+
+body.dark-mode .total-value {
+    color: #ffffff;
+}
+
+body.dark-mode .checkmark {
+    background: #333333;
+    border-color: #555555;
 }
 </style>
-<div class="nueva-venta-container">
-    <h2>Registrar Nueva Venta</h2>
-    <form method="post">
-        <table>
-            <tr>
-                <th>Producto</th>
-                <th>Stock</th>
-                <th>Precio ($)</th>
-                <th>Cantidad</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-            {% for p in productos %}
-            <tr>
-                <td>{{ p.nombre }}</td>
-                <td>{{ p.stock }}</td>
-                <td>{{ '%.2f' % p['precio']['$'] if 'precio' in p and '$' in p['precio'] else '-' }}</td>
-                <td><input type="number" name="cantidad_{{ p._id }}" min="0" max="{{ p.stock }}" value="0" style="width:60px;"></td>
-                <td id="subtotal_{{ p._id }}">0.00</td>
-                <td><input type="checkbox" name="agregar_{{ p._id }}"></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <label for="cliente_nombre">Cliente (opcional):</label>
-        <input type="text" name="cliente_nombre" placeholder="Nombre">
-        <input type="text" name="cliente_telefono" placeholder="Teléfono">
-        <input type="email" name="cliente_email" placeholder="Correo electrónico">
-        <label for="metodo_pago">Método de pago:</label>
-        <input type="text" name="metodo_pago" placeholder="Efectivo, Transferencia, etc.">
-        <div style="margin:1em 0; font-weight:600;">Total: $<span id="total_venta">0.00</span></div>
-        <input type="hidden" name="total" id="total_hidden" value="0.00">
-        <button type="submit">Registrar venta</button>
-    </form>
-    <a href="{{ url_for('ventas.listar_ventas') }}" style="margin-top:1.2rem; color:#2b7cff; text-decoration:underline;">Ver ventas</a>
-</div>
+
 <script>
 // JS para calcular subtotales y total en tiempo real
 const items = {{ productos|tojson|safe }};
+
 function actualizarTotales() {
     let total = 0;
     items.forEach(p => {
         const cantidad = parseInt(document.querySelector(`[name='cantidad_${p._id}']`).value) || 0;
         const precio = p.precio && p.precio['$'] ? parseFloat(p.precio['$']) : 0;
         const subtotal = cantidad * precio;
-        document.getElementById(`subtotal_${p._id}`).innerText = subtotal.toFixed(2);
+        document.getElementById(`subtotal_${p._id}`).innerText = '$' + subtotal.toFixed(2);
         if (document.querySelector(`[name='agregar_${p._id}']`).checked) {
             total += subtotal;
         }
@@ -159,8 +598,41 @@ function actualizarTotales() {
     document.getElementById('total_venta').innerText = total.toFixed(2);
     document.getElementById('total_hidden').value = total.toFixed(2);
 }
+
+// Event listeners para cálculos en tiempo real
 document.querySelectorAll('input[type=number], input[type=checkbox]').forEach(el => {
     el.addEventListener('input', actualizarTotales);
+});
+
+// Animaciones de entrada al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.productos-section, .cliente-section, .total-section');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+});
+
+// Validación de cantidades
+document.querySelectorAll('.cantidad-input').forEach(input => {
+    input.addEventListener('input', function() {
+        const max = parseInt(this.getAttribute('max'));
+        const value = parseInt(this.value);
+        
+        if (value > max) {
+            this.value = max;
+            this.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                this.style.borderColor = '#1ec6b6';
+            }, 1000);
+        }
+    });
 });
 </script>
 {% endblock %}

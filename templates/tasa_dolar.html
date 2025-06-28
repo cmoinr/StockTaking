@@ -7,185 +7,802 @@
 
 
 {% block main %}
-<div class="tasa-dolar-container">
-  <h1>Tasa de Cambio</h1>
-  <div class="exchange-rate-card">
-      <div id="tasa-loading" style="text-align:center; color:#888;">Cargando tasas...</div>
-      <div id="tasa-content" style="display:none;">
-          <div class="tasa-row">
-              <span class="tasa-label">Oficial:</span>
-              <span class="tasa-value" id="tasa-oficial"></span>
-          </div>
-          <div class="tasa-row">
-              <span class="tasa-label">Paralelo:</span>
-              <span class="tasa-value" id="tasa-paralelo"></span>
-          </div>
-          <div class="tasa-row tasa-promedio">
-              <span class="tasa-label">Promedio:</span>
-              <span class="tasa-value" id="tasa-promedio"></span>
-          </div>
-          <div class="tasa-fecha" id="tasa-fecha"></div>
-      </div>
-  </div>
-  <div class="update-prices-card">
-      <h2>Actualizar precios de productos</h2>
-      <form id="form-actualizar-precios" style="margin-bottom:0; display: flex; flex-direction: column; align-items: center;">
-          <label style="margin-bottom: 8px;">Selecciona la tasa a aplicar:</label>
-          <div class="tasa-selector-horizontales" style="margin: 18px 0 18px 0; display: flex; gap: 10px; justify-content: center;">
-              <button type="button" class="filtro-btn active" data-tasa="oficial">Oficial</button>
-              <button type="button" class="filtro-btn" data-tasa="paralelo">Paralelo</button>
-              <button type="button" class="filtro-btn" data-tasa="promedio">Promedio</button>
-          </div>
-          <input type="hidden" name="tasa" id="tasa-hidden" value="oficial">
-          <button type="button" class="button" style="margin-top: 8px;" onclick="vistaPreviaActualizacion()">Vista previa y actualizar</button>
-      </form>
-      <div id="preview-modal" class="modal" style="display:none;">
-          <div class="modal-content">
-              <button class="close-modal-btn" onclick="cerrarModal()" title="Cerrar vista previa">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                <span style="margin-left:6px;">Cerrar</span>
-              </button>
-              <div>
-                <h3>Vista previa de actualización de precios</h3>
-              </div>
-              
-              <div id="preview-table-container" style="max-height:300px;overflow:auto;"></div>
-              <button class="button" onclick="confirmarActualizacion()">Confirmar actualización</button>
-          </div>
-      </div>
-  </div>
-</div>
+    <div class="tasa-container">
+        <div class="tasa-header">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"/>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                Tasa de Cambio
+            </h1>
+            <p>Consulta las tasas actualizadas y sincroniza precios de tu inventario</p>
+        </div>
+
+        <div class="content-container">
+            <!-- Sección de Tasas de Cambio -->
+            <div class="tasa-section">
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m9 11 3 3 8-8"/>
+                    </svg>
+                    <span>Tasas Actualizadas</span>
+                </div>
+                
+                <div id="tasa-loading" class="loading-state">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="loading-spinner">
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    </svg>
+                    Cargando tasas de cambio...
+                </div>
+                
+                <div id="tasa-content" class="tasa-content" style="display:none;">
+                    <div class="tasa-cards">
+                        <div class="tasa-card oficial">
+                            <div class="tasa-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                    <path d="m2 17 10 5 10-5"/>
+                                    <path d="m2 12 10 5 10-5"/>
+                                </svg>
+                            </div>
+                            <div class="tasa-info">
+                                <span class="tasa-label">Oficial BCV</span>
+                                <span class="tasa-value" id="tasa-oficial">--</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tasa-card paralelo">
+                            <div class="tasa-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18"/>
+                                    <path d="m19 9-5 5-4-4-3 3"/>
+                                </svg>
+                            </div>
+                            <div class="tasa-info">
+                                <span class="tasa-label">Paralelo</span>
+                                <span class="tasa-value" id="tasa-paralelo">--</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tasa-card promedio">
+                            <div class="tasa-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                </svg>
+                            </div>
+                            <div class="tasa-info">
+                                <span class="tasa-label">Promedio</span>
+                                <span class="tasa-value" id="tasa-promedio">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tasa-fecha" id="tasa-fecha"></div>
+                </div>
+            </div>
+
+            <!-- Sección de Actualización de Precios -->
+            <div class="update-section">
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                        <path d="M3 3v5h5"/>
+                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                        <path d="M21 21v-5h-5"/>
+                    </svg>
+                    <span>Actualizar Precios del Inventario</span>
+                </div>
+                
+                <form id="form-actualizar-precios" class="update-form">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Selecciona la tasa a aplicar
+                        </label>
+                        <div class="tasa-selector">
+                            <button type="button" class="tasa-btn active" data-tasa="oficial">
+                                Oficial
+                            </button>
+                            <button type="button" class="tasa-btn" data-tasa="paralelo">
+                                Paralelo
+                            </button>
+                            <button type="button" class="tasa-btn" data-tasa="promedio">
+                                Promedio
+                            </button>
+                        </div>
+                        <input type="hidden" name="tasa" id="tasa-hidden" value="oficial">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="preview-btn" onclick="vistaPreviaActualizacion()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Vista Previa y Actualizar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Vista Previa -->
+        <div id="preview-modal" class="modal" style="display:none;">
+            <div class="modal-overlay" onclick="cerrarModal()"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Vista Previa de Actualización
+                    </h3>
+                    <button class="close-modal-btn" onclick="cerrarModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="modal-body">
+                    <div id="preview-table-container" class="preview-container"></div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="confirm-btn" onclick="confirmarActualizacion()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20,6 9,17 4,12"/>
+                        </svg>
+                        Confirmar Actualización
+                    </button>
+                    <button class="cancel-btn" onclick="cerrarModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 <style>
-.tasa-dolar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 40px;
-  padding: 20px 0 0 0;
-  width: 100%;
-  box-sizing: border-box;
+/* Container Principal */
+.tasa-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
-.exchange-rate-card {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto 28px auto;
-  text-align: center;
-  box-sizing: border-box;
-  box-shadow: 0 2px 8px rgba(30,198,182,0.08); /* Sombra suave tipo drag */
-  border-radius: 10px;
-  background: #fff;
-  border: 1.5px solid #1ec6b6;
+
+/* Header Section */
+.tasa-header {
+    text-align: center;
+    margin-bottom: 40px;
 }
-.update-prices-card {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto 28px auto;
-  text-align: center;
-  box-sizing: border-box;
-  background: #fff;
+
+.tasa-header h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2.2em;
+    color: #0e5e5a;
+    margin-bottom: 10px;
+    font-weight: 700;
 }
-body.dark-mode .exchange-rate-card {
-  background: #23272b;
-  color: #e0e0e0;
-  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+
+.tasa-header h1 svg {
+    color: #1ec6b6;
 }
-body.dark-mode .update-prices-card {
-  background: #23272b;
-  color: #e0e0e0;
+
+.tasa-header p {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0;
 }
-.update-prices-card h2 {
-  margin-bottom: 18px;
+
+/* Content Container */
+.content-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
-.tasa-selector-horizontales .filtro-btn {
-  background: #e0f7fa;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-weight: 600;
-  color: #0e5e5a;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+
+/* Sections */
+.tasa-section,
+.update-section {
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(14, 94, 90, 0.08);
+    border: 2px solid #e6fcfa;
+    overflow: hidden;
 }
-.tasa-selector-horizontales .filtro-btn.active {
-  background: #1ec6b6;
-  color: #fff;
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 25px;
+    padding: 25px 30px 0 30px;
+    border-bottom: 1.5px solid #e6fcfa;
+    padding-bottom: 15px;
 }
-.update-prices-card form label {
-  margin-bottom: 8px;
+
+.section-title svg {
+    color: #1ec6b6;
 }
-.update-prices-card form button {
-  margin-top: 8px;
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px;
+    color: #666;
+    font-size: 1.1em;
 }
+
+.loading-spinner {
+    animation: spin 1s linear infinite;
+    color: #1ec6b6;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Tasa Content */
+.tasa-content {
+    padding: 0 30px 30px 30px;
+}
+
+.tasa-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.tasa-card {
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    border: 2px solid #e6fcfa;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.tasa-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(30, 198, 182, 0.15);
+    border-color: #1ec6b6;
+}
+
+.tasa-card.oficial {
+    border-left: 4px solid #2196F3;
+}
+
+.tasa-card.paralelo {
+    border-left: 4px solid #FF9800;
+}
+
+.tasa-card.promedio {
+    border-left: 4px solid #4CAF50;
+}
+
+.tasa-icon {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.tasa-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.tasa-label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.tasa-value {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #0e5e5a;
+}
+
+.tasa-fecha {
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+    padding: 15px;
+    background: #f8fffe;
+    border-radius: 8px;
+    border: 1px solid #e6fcfa;
+}
+
+/* Update Form */
+.update-section {
+    padding: 25px 30px 30px 30px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #0e5e5a;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.form-label svg {
+    color: #1ec6b6;
+}
+
+/* Tasa Selector */
+.tasa-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.tasa-btn {
+    background: linear-gradient(135deg, #f8fffe, #ffffff);
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 15px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    color: #0e5e5a;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.tasa-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(30, 198, 182, 0.2);
+    border-color: #1ec6b6;
+}
+
+.tasa-btn.active {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    border-color: #1ec6b6;
+    box-shadow: 0 4px 15px rgba(30, 198, 182, 0.3);
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.preview-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 250px;
+    justify-content: center;
+}
+
+.preview-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+}
+
 .modal-content {
-  position: relative;
-  background: #fff;
-  border-radius: 10px;
-  padding: 24px 18px 18px 18px;
-  max-width: 420px;
-  margin: 40px auto;
-  box-shadow: 0 2px 8px rgba(30,198,182,0.08);
-  border: 1.5px solid #1ec6b6;
-  text-align: center;
+    position: relative;
+    background: #ffffff;
+    border-radius: 15px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border: 2px solid #e6fcfa;
+    display: flex;
+    flex-direction: column;
 }
-body.dark-mode .modal-content {
-  background: #23272b;
-  color: #e0e0e0;
-  box-shadow: 0 2px 8px rgba(30,198,182,0.18);
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 25px;
+    border-bottom: 2px solid #e6fcfa;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
 }
+
+.modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 1.3em;
+    color: #0e5e5a;
+    font-weight: 600;
+}
+
+.modal-header h3 svg {
+    color: #1ec6b6;
+}
+
 .close-modal-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #b71c1c;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 16px;
-  font-size: 0.75em;
-  font-weight: 600;
-  cursor: pointer;
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  transition: background 0.18s, color 0.18s;
-  z-index: 10;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease;
 }
+
 .close-modal-btn:hover {
-  background: #0e5e5a;
-  color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    background: linear-gradient(135deg, #c82333, #dc3545);
+}
+
+.modal-body {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.preview-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid #e6fcfa;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.preview-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.preview-container th {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    border: none;
+}
+
+.preview-container td {
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.preview-container tr:hover {
+    background: #f8fffe;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 15px;
+    padding: 20px 25px;
+    border-top: 2px solid #e6fcfa;
+    background: linear-gradient(135deg, #f8fffe 0%, #f0fffe 100%);
+    justify-content: center;
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+    background: linear-gradient(135deg, #20c997, #28a745);
+}
+
+.cancel-btn {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+    background: linear-gradient(135deg, #495057, #6c757d);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .tasa-container {
+        padding: 15px;
+    }
+    
+    .tasa-header h1 {
+        font-size: 1.8em;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .section-title {
+        font-size: 1.1em;
+        padding: 20px 15px 0 15px;
+    }
+    
+    .tasa-content,
+    .update-section {
+        padding: 0 15px 20px 15px;
+    }
+    
+    .tasa-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .tasa-selector {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .confirm-btn,
+    .cancel-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .tasa-card {
+        padding: 15px;
+    }
+    
+    .tasa-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .preview-btn {
+        min-width: 100%;
+        padding: 12px 20px;
+    }
+}
+
+/* Dark Mode Support */
+body.dark-mode .tasa-section,
+body.dark-mode .update-section {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .tasa-header h1,
+body.dark-mode .section-title,
+body.dark-mode .form-label {
+    color: #ffffff;
+}
+
+body.dark-mode .tasa-header p {
+    color: #cccccc;
+}
+
+body.dark-mode .tasa-card {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-color: #404040;
+}
+
+body.dark-mode .tasa-value {
+    color: #ffffff;
+}
+
+body.dark-mode .tasa-label {
+    color: #cccccc;
+}
+
+body.dark-mode .tasa-fecha {
+    background: #333333;
+    border-color: #404040;
+    color: #cccccc;
+}
+
+body.dark-mode .tasa-btn {
+    background: linear-gradient(135deg, #333333, #444444);
+    color: #ffffff;
+    border-color: #555555;
+}
+
+body.dark-mode .tasa-btn.active {
+    background: linear-gradient(135deg, #1ec6b6, #17a2b8);
+    color: white;
+    border-color: #1ec6b6;
+    box-shadow: 0 4px 15px rgba(30, 198, 182, 0.3);
+}
+
+body.dark-mode .modal-content {
+    background: #2a2a2a;
+    border-color: #404040;
+}
+
+body.dark-mode .modal-header {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-bottom-color: #404040;
+}
+
+body.dark-mode .modal-header h3 {
+    color: #ffffff;
+}
+
+body.dark-mode .modal-footer {
+    background: linear-gradient(135deg, #333333 0%, #3a3a3a 100%);
+    border-top-color: #404040;
+}
+
+body.dark-mode .preview-container {
+    background: #444444;
+    border-color: #555555;
+}
+
+body.dark-mode .preview-container td {
+    border-bottom-color: #555555;
+}
+
+body.dark-mode .preview-container tr:hover {
+    background: #555555;
 }
 </style>
 {% endblock %}
 {% block scripts %}
 <script>
 let tasas = {};
+
+// Cargar tasas de cambio
 fetch("{{ url_for('tasa_cambio') }}")
   .then(res => res.json())
   .then(data => {
     tasas = data;
     document.getElementById('tasa-loading').style.display = 'none';
     document.getElementById('tasa-content').style.display = 'block';
+    
     if(data.oficial && data.paralelo) {
-      document.getElementById('tasa-oficial').textContent = data.oficial.promedio + ' Bs/USD';
-      document.getElementById('tasa-paralelo').textContent = data.paralelo.promedio + ' Bs/USD';
-      const prom = ((parseFloat(data.oficial.promedio) + parseFloat(data.paralelo.promedio)) / 2).toFixed(3);
-      document.getElementById('tasa-promedio').textContent = prom + ' Bs/USD';
+      document.getElementById('tasa-oficial').textContent = parseFloat(data.oficial.promedio).toFixed(2) + ' Bs/$';
+      document.getElementById('tasa-paralelo').textContent = parseFloat(data.paralelo.promedio).toFixed(2) + ' Bs/$';
+      const prom = ((parseFloat(data.oficial.promedio) + parseFloat(data.paralelo.promedio)) / 2).toFixed(2);
+      document.getElementById('tasa-promedio').textContent = prom + ' Bs/$';
+      
       let fecha = data.oficial.fecha || data.paralelo.fecha;
       if(fecha) {
         const f = new Date(fecha);
-        document.getElementById('tasa-fecha').textContent = 'Actualizado: ' + f.toLocaleString('es-VE');
+        document.getElementById('tasa-fecha').innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12,6 12,12 16,14"/>
+          </svg>
+          Última actualización: ${f.toLocaleString('es-VE')}
+        `;
       }
     } else {
-      document.getElementById('tasa-content').innerHTML = '<div style="color:#c00;">No se pudo obtener la tasa de cambio.</div>';
+      document.getElementById('tasa-content').innerHTML = `
+        <div style="text-align: center; color: #dc3545; padding: 40px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <p>No se pudo obtener la tasa de cambio en este momento.</p>
+        </div>
+      `;
     }
   })
-  .catch(() => {
-    document.getElementById('tasa-loading').textContent = 'Error al cargar la tasa de cambio.';
+  .catch(error => {
+    console.error('Error:', error);
+    document.getElementById('tasa-loading').innerHTML = `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      Error al cargar las tasas de cambio
+    `;
   });
 
-// Selector horizontal de tasa
-const tasaBtns = document.querySelectorAll('.tasa-selector-horizontales .filtro-btn');
+// Selector de tasa
+const tasaBtns = document.querySelectorAll('.tasa-btn');
 const tasaHidden = document.getElementById('tasa-hidden');
+
 tasaBtns.forEach(btn => {
   btn.addEventListener('click', function() {
     tasaBtns.forEach(b => b.classList.remove('active'));
@@ -197,28 +814,103 @@ tasaBtns.forEach(btn => {
 function vistaPreviaActualizacion() {
     const tasaSel = document.getElementById('tasa-hidden').value;
     let tasaValor = 0;
-    if (tasaSel === 'oficial') tasaValor = tasas.oficial.promedio;
-    else if (tasaSel === 'paralelo') tasaValor = tasas.paralelo.promedio;
-    else tasaValor = ((parseFloat(tasas.oficial.promedio) + parseFloat(tasas.paralelo.promedio)) / 2).toFixed(3);
+    
+    if (tasaSel === 'oficial') tasaValor = parseFloat(tasas.oficial.promedio);
+    else if (tasaSel === 'paralelo') tasaValor = parseFloat(tasas.paralelo.promedio);
+    else tasaValor = parseFloat(((parseFloat(tasas.oficial.promedio) + parseFloat(tasas.paralelo.promedio)) / 2).toFixed(3));
+    
+    // Mostrar loading en el botón
+    const previewBtn = document.querySelector('.preview-btn');
+    const originalHTML = previewBtn.innerHTML;
+    previewBtn.innerHTML = `
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="loading-spinner">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      Cargando...
+    `;
+    previewBtn.disabled = true;
+    
     fetch('/api/productos')
       .then(res => res.json())
       .then(productos => {
-        let html = '<table style="width:100%;font-size:0.98em;"><tr><th>Nombre</th><th>Precio $</th><th>Precio Bs (nuevo)</th></tr>';
+        let html = `
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio USD</th>
+                <th>Precio Bs (Nuevo)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
         productos.forEach(p => {
           let precioUSD = p.precio && p.precio['$'] ? parseFloat(p.precio['$']) : 0;
           let nuevoBs = (precioUSD * tasaValor).toFixed(2);
-          html += `<tr><td>${p.nombre}</td><td>$${precioUSD}</td><td>Bs ${nuevoBs}</td></tr>`;
+          html += `
+            <tr>
+              <td>${p.nombre}</td>
+              <td>$${precioUSD.toFixed(2)}</td>
+              <td>Bs ${nuevoBs}</td>
+            </tr>
+          `;
         });
-        html += '</table>';
+        
+        html += '</tbody></table>';
         document.getElementById('preview-table-container').innerHTML = html;
-        document.getElementById('preview-modal').style.display = 'block';
+        document.getElementById('preview-modal').style.display = 'flex';
+        
+        // Restaurar botón
+        previewBtn.innerHTML = originalHTML;
+        previewBtn.disabled = false;
+        
+        // Animación de entrada del modal
+        const modal = document.getElementById('preview-modal');
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'scale(0.9)';
+        
+        setTimeout(() => {
+          modalContent.style.transition = 'all 0.3s ease';
+          modalContent.style.opacity = '1';
+          modalContent.style.transform = 'scale(1)';
+        }, 10);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        previewBtn.innerHTML = originalHTML;
+        previewBtn.disabled = false;
+        alert('Error al cargar los productos. Inténtalo de nuevo.');
       });
 }
+
 function cerrarModal() {
-    document.getElementById('preview-modal').style.display = 'none';
+    const modal = document.getElementById('preview-modal');
+    const modalContent = modal.querySelector('.modal-content');
+    
+    modalContent.style.opacity = '0';
+    modalContent.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+      modal.style.display = 'none';
+      modalContent.style.transition = '';
+    }, 300);
 }
+
 function confirmarActualizacion() {
     const tasaSel = document.getElementById('tasa-hidden').value;
+    const confirmBtn = document.querySelector('.confirm-btn');
+    const originalHTML = confirmBtn.innerHTML;
+    
+    confirmBtn.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="loading-spinner">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      Actualizando...
+    `;
+    confirmBtn.disabled = true;
+    
     fetch('/actualizar_precios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -226,12 +918,52 @@ function confirmarActualizacion() {
     })
     .then(res => res.json())
     .then(data => {
-        cerrarModal();
         if(data.success && data.redirect) {
-            window.location.href = data.redirect;
+            // Mostrar mensaje de éxito antes de redirigir
+            confirmBtn.innerHTML = `
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"/>
+              </svg>
+              ¡Actualizado!
+            `;
+            
+            setTimeout(() => {
+              window.location.href = data.redirect;
+            }, 1000);
+        } else {
+            confirmBtn.innerHTML = originalHTML;
+            confirmBtn.disabled = false;
+            alert('Error al actualizar los precios. Inténtalo de nuevo.');
         }
-        // Si no hay redirección, podrías mostrar un error o fallback aquí si lo deseas
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        confirmBtn.innerHTML = originalHTML;
+        confirmBtn.disabled = false;
+        alert('Error al actualizar los precios. Inténtalo de nuevo.');
     });
 }
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        cerrarModal();
+    }
+});
+
+// Animaciones de entrada al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    const sections = document.querySelectorAll('.tasa-section, .update-section');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+});
 </script>
 {% endblock %}
